@@ -1,0 +1,1 @@
+## các chức năng chính
