@@ -3,6 +3,14 @@
 
 // const baseUrl = 'https://server.aptech.io';
 
+import {  axiosPublic, axiosPrivate } from '../../../libs/axiosClient';
+
+export const getAllUser = async () => {
+  const response = await axiosPrivate.get('/users');
+  // API trả về { data: [...] }
+  return response.data.data;
+};
+
 // // Always get the latest token from the correct storage
 // const getAuthHeaders = () => {
 //   const authStorage = localStorage.getItem('auth-storage-for-login');
