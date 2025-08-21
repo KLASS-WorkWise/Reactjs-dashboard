@@ -1,5 +1,6 @@
 import { GroupOutlined, UserOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
+import UserPage from "./UserPage";
 
 export const routesAdministrator: RouteItem[] = [
   {
@@ -10,11 +11,11 @@ export const routesAdministrator: RouteItem[] = [
     isPrivate: true,
     children: [
       {
-        path: '/administrators/users',
+        path: '/users',
         label: 'Users',
+        key: 'users',
         icon: <UserOutlined />,
-        key: 'administrators-users',
-        element: null,
+        element: <UserPage />,
         isShowMenu: true,
         isPrivate: true,
       },
