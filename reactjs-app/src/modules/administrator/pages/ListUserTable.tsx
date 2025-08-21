@@ -14,7 +14,6 @@ const UserTable: React.FC<UserTableProps> = ({
     data,
     loading,
     columns,
-    onAddClick,
 }) => {
     return (
         <Table

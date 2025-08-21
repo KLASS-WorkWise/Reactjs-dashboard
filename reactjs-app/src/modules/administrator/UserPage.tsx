@@ -1,13 +1,3 @@
-// import React from 'react';
-// import { List } from 'antd';
-// import ListUserTable from './components/ListUserTable';
-
-// const UserListPage = () => {
-//     return <ListUserTable />;
-// };
-
-// export default UserListPage;
-
 import React, { useEffect, useState } from "react";
 import { Button, Form, message, Popconfirm, Space } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined } from "@ant-design/icons";
@@ -15,7 +5,7 @@ import { EditOutlined, DeleteOutlined, PlusOutlined, QuestionCircleOutlined } fr
 import UserEdit from "./components/UserEdit";
 import ListUserTable from './pages/ListUserTable';
 import type { UserType } from "./user.type";
-import { getAllUser, updateUser, deleteUser } from "./user.service";
+import { getAllUser, updateUser, deleteUser, changeUserRole } from "./user.service";
 import type { ColumnsType } from "antd/es/table";
 
 const UserPage = () => {
@@ -24,6 +14,12 @@ const UserPage = () => {
     const [editFormVisible, setEditFormVisible] = useState(false);
     const [editForm] = Form.useForm();
 
+    const ROLE_MAP: Record<string, number> = {
+        "Administrators": 1,
+        "Employers": 2,
+        "Users": 3,
+    };
+
     useEffect(() => {
         getAllUser().then(setUsers);
     }, []);
@@ -31,10 +27,14 @@ const UserPage = () => {
     const handleUpdateUser = async (values: any) => {
         try {
             await updateUser(values);
+            await changeUserRole(values.id, values.role);
             message.success("Cập nhật thành công!");
-            setEditFormVisible(false);
+            setEditFormVisible(false); // Đóng form edit
+            editForm.resetFields();    // Reset form
+            // Đợi cập nhật xong mới load lại users
             getAllUser().then(setUsers);
         } catch (err) {
+            console.error(err);
             message.error("Cập nhật thất bại!");
         }
     };
@@ -105,7 +105,10 @@ const UserPage = () => {
                         icon={<EditOutlined />}
                         onClick={() => {
                             setSelectedRecord(record);
-                            editForm.setFieldsValue(record);
+                            editForm.setFieldsValue({
+                                ...record,
+                                role: record.roles && record.roles.length > 0 ? ROLE_MAP[record.roles[0]] : undefined
+                            });
                             setEditFormVisible(true);
                         }}
                     />
@@ -129,14 +132,6 @@ const UserPage = () => {
             <div className="bg-white rounded-2xl shadow-2xl p-10 w-full">
                 <div className="flex justify-between items-center mb-8">
                     <h2 className="text-2xl font-bold text-gray-800">Danh sách người dùng</h2>
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        className="flex items-center gap-2 text-base font-semibold"
-                    // onClick={...} // Nếu có chức năng thêm mới
-                    >
-                        Thêm mới
-                    </Button>
                 </div>
                 <ListUserTable
                     data={users}

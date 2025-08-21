@@ -1,6 +1,12 @@
-import { Modal, Form, Input } from 'antd';
+import { Modal, Form, Input, Select } from 'antd';
 import type { FormInstance } from 'antd/es/form';
 import React from 'react';
+
+const ROLE_OPTIONS = [
+    { label: "Administrators", value: 1 },
+    { label: "Employers", value: 2 },
+    { label: "Users", value: 3 },
+];
 
 type UserEditProps = {
     visible: boolean;
@@ -48,6 +54,11 @@ const UserEdit: React.FC<UserEditProps> = ({
 
                 <Form.Item label="Full Name" name="fullName" rules={[{ required: true, message: 'Chưa nhập full name' }]} hasFeedback>
                     <Input />
+                </Form.Item>
+
+                {/* Thêm chọn Role */}
+                <Form.Item label="Role" name="role" rules={[{ required: true, message: 'Chưa chọn role' }]} hasFeedback>
+                    <Select options={ROLE_OPTIONS} />
                 </Form.Item>
 
                 <Form.Item hidden label="Id" name="id" hasFeedback>

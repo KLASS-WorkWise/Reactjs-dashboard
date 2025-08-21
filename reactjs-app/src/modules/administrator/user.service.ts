@@ -8,6 +8,7 @@ export const getAllUser = async (): Promise<UserType[]> => {
     return Array.isArray(data) ? data : data.data || [];
 };
 
+
 export const updateUser = async (user: Partial<UserType> & { id: number }) => {
     const res = await fetch(`http://localhost:8080/api/users/${user.id}`, {
         method: "PATCH",
@@ -22,4 +23,15 @@ export const deleteUser = async (id: number) => {
         method: "DELETE",
     });
     return res.json();
+};
+
+export const changeUserRole = async (userId: number, roleId: number) => {
+    const res = await fetch(`http://localhost:8080/api/roles/change/${userId}/${roleId}`, {
+        method: "POST",
+    });
+       try {
+        return await res.json();
+    } catch {
+        return res.status; 
+    }
 };
