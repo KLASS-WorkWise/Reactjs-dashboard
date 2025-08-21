@@ -8,7 +8,7 @@ interface ProductTableProps {
   loading: boolean;
   columns: ColumnsType<ProductType>;
   page: number;
- onPageChange: (page: number, pageSize: number) => void;
+  onPageChange: (page: number, pageSize: number) => void;
   onAddClick: () => void;
 }
 

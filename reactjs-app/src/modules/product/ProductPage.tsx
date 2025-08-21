@@ -29,35 +29,35 @@ const ProductPage = () => {
   const [selectedRecord, setSelectedRecord] = React.useState<ProductType | null>(null);
   const [updateForm] = Form.useForm();
   const [createForm] = Form.useForm();
-  const {sendMessage} = useAppMessage();
+  const { sendMessage } = useAppMessage();
 
   const msgSuccess = (msg: string) => {
     sendMessage({
       msg,
-      type:'success',
+      type: 'success',
     })
   };
 
   const msgError = (msg: string) => {
-   sendMessage({
+    sendMessage({
       msg,
       type: 'error',
     })
   };
 
- //=========================== PHÂN TRANG =================================//
+  //=========================== PHÂN TRANG =================================//
   const onChange: PaginationProps['onChange'] = (pageNumber, pageSize) => {
     console.log('Page: ', pageNumber);
     navigate(`/product?page=${pageNumber}&limit=${pageSize}`);
   };
 
-  
+
   // Sử dụng useQuery để fetch data từ API
   const queryCategory = useQuery<CategoryType[], Error>({
     queryKey: ['categories'],
     queryFn: fetchCategories,
   });
-  
+
   //=========================== FETCH DELETE =================================//
   // Mutations Để xóa danh mục
   const deleteMutation = useMutation({
@@ -68,7 +68,7 @@ const ProductPage = () => {
       // Sau khi thêm mới thành công thì update lại danh sách sản phẩm dựa vào queryKey
       queryClient.invalidateQueries({ queryKey: ['products', page] });
     },
-    onError: (err)=> {
+    onError: (err) => {
       console.log('Xóa có lỗi !', err);
       msgError('Xóa Product không thành công !');
     }
@@ -77,28 +77,28 @@ const ProductPage = () => {
 
   //=========================== FETCH UPDATE =================================//
 
-    const updateMutation = useMutation({
-      mutationFn: updateData,
-      onSuccess: () => {
-        msgSuccess('Cập nhật thành công !');
-        // Sau khi thêm mới thành công thì update lại danh sách danh mucj dựa vào queryKey
-        queryClient.invalidateQueries({ queryKey: ['products', page] });
-        
-        setEditFormVisible(false);
-      },
-      onError: (err)=> {
-        console.log('Cập nhật có lỗi !', err);
-        msgError('Cập nhật không thành công !');
-        setEditFormVisible(false);
-      }
-    });
+  const updateMutation = useMutation({
+    mutationFn: updateData,
+    onSuccess: () => {
+      msgSuccess('Cập nhật thành công !');
+      // Sau khi thêm mới thành công thì update lại danh sách danh mucj dựa vào queryKey
+      queryClient.invalidateQueries({ queryKey: ['products', page] });
+
+      setEditFormVisible(false);
+    },
+    onError: (err) => {
+      console.log('Cập nhật có lỗi !', err);
+      msgError('Cập nhật không thành công !');
+      setEditFormVisible(false);
+    }
+  });
 
   const onUpdateFinish = (values: ProductType) => {
-    console.log('onUpdateFinish',values);
+    console.log('onUpdateFinish', values);
     updateMutation.mutate(values);
   };
 
-  const onUpdateFinishFailed = (errors) => {
+  const onUpdateFinishFailed = (errors: any) => {
     console.log('🐣', errors);
   };
 
@@ -107,8 +107,8 @@ const ProductPage = () => {
   const addMutation = useMutation({
     mutationFn: fetchCreate,
     onSuccess: (data) => {
-      console.log('addMutation onSuccess',data);
-      
+      console.log('addMutation onSuccess', data);
+
       setCreateFormVisible(false);
       msgSuccess('Thêm mới thành công !');
       // Sau khi thêm mới thành công thì update lại danh sách sản phẩm dựa vào queryKey
@@ -116,17 +116,17 @@ const ProductPage = () => {
       //reset form
       createForm.resetFields();
     },
-    onError: (err)=> {
+    onError: (err) => {
       console.log('Thêm mới có lỗi !', err);
       msgError('Thêm mới có lỗi !')
     }
   })
   const onAddFinish = (values: ProductType) => {
-    console.log('onAddFinish',values);
+    console.log('onAddFinish', values);
     addMutation.mutate(values);
-    
+
   };
-  const onAddFinishFailed = (errors) => {
+  const onAddFinishFailed = (errors: any) => {
     console.log('🐣', errors);
   };
 
@@ -139,7 +139,7 @@ const ProductPage = () => {
   });
 
   console.log(data);
-  
+
 
   if (isError) {
     return <div>Error: {error.message}</div>;
@@ -155,7 +155,7 @@ const ProductPage = () => {
       title: 'Image',
       dataIndex: 'images',
       key: 'images',
-      render: (_,record) => <Image src={record.images[0]} alt="Avatar" width={50} />,
+      render: (_, record) => <Image src={record.images[0]} alt="Avatar" width={50} />,
     },
 
     {
@@ -174,7 +174,7 @@ const ProductPage = () => {
       title: 'Category',
       dataIndex: 'category',
       key: 'category',
-      render: (_,record) => <span>{record.category.name}</span>,
+      render: (_, record) => <span>{record.category.name}</span>,
     },
 
     {
@@ -188,7 +188,7 @@ const ProductPage = () => {
             onClick={() => {
               console.log('EDIT', record);
               setSelectedRecord(record);
-              updateForm.setFieldsValue({...record, categoryId: record.category.id});
+              updateForm.setFieldsValue({ ...record, categoryId: record.category.id });
               setEditFormVisible(true);
             }}
           />
@@ -200,7 +200,7 @@ const ProductPage = () => {
               deleteMutation.mutate(record.id);
             }}
             icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
-            onCancel={() => {}}
+            onCancel={() => { }}
             okText="Đồng ý"
             okType="danger"
             cancelText="Đóng"

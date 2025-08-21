@@ -1,5 +1,6 @@
 import axios from 'axios';
-const API_URL = 'https://api.escuelajs.co/api'
+// const API_URL = 'https://api.escuelajs.co/api'
+const API_URL = 'http://localhost:8080/api'
 
 // Dùng khi không cần xức thực token
 const axiosPublic = axios.create({
