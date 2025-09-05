@@ -1,7 +1,8 @@
 
 const DashboardPage = () => {
   return (
-    <div>DashboardPage</div>
+    <div style={{ color: "red" }}
+    >DashboardPage</div>
   )
 }
 

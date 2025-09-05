@@ -52,7 +52,7 @@ export const useAuthStore = create<AuthState>()(
               {
                 access_token: response.access_token,
                 refresh_token: response.refresh_token,
-                loggedInUser: response.loggedInUser,
+                loggedInUser: response.loggedInUser,  // loggedInUser.roles là mảng role
                 loading: false,
                 error: null,
               },

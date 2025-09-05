@@ -1,31 +1,34 @@
-// import type { EmployerType } from "./employer.type";
+import axios from "axios";
+import type { CreateEmployerRequest, EmployerType } from "./employer.type";
 
-// hiển thị dánh sách yêu cầu chờ phê duyệt
-export const fetchEmployers = async (page?: number) => {
-  const url = page !== undefined
-    ? `http://localhost:8080/api/employers/upgradeEmployer?page=${page}`
-    : `http://localhost:8080/api/employers/upgradeEmployer`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch employers");
-  return res.json();
+
+export const fetchEmployers = async (): Promise<EmployerType[]> => {
+    // const response = await fetch("/api/employers");  dùng fetch vẫn dc nhưng thôi ta dụng axios cho nó
+    const response = await axios.get(`http://localhost:8080/api/employees`);  // sử dụng dấu ` ` vì lát nx mình còn nối chuỗi vì nếu xóa còn truyền id đồ dô nữa mà
+    //  bắt buộc phải dùng return để thg queryFn nó bắt được giá trị và nó cache lại bằng cái key là [employers]
+    return response.data;
 };
 
-// api phê duyệt 
-export const approveEmployer = async (employerId: string) => {
-    const res = await fetch(`http://localhost:8080/api/users/approve-employer/${employerId}`, {
-        method: "PATCH",
-    });
-    if (!res.ok) throw new Error("Failed to approve employer");
-    return res.text();
-}
 
-// api từ chối
-export const rejectEmployer = async (employerId: string) => {
-    const res = await fetch(`http://localhost:8080/api/users/reject-employer/${employerId}`, {
-        method: "PATCH",
-    });
-    if (!res.ok) throw new Error("Failed to reject employer");
-    return res.text();
-}
+export const createEmployer = async (payload: CreateEmployerRequest) => {
+    const response = await axios.post(
+        `http://localhost:8080/api/employees`,
+        payload
+    );
+    return response.data;
+};
 
 
+export const updateEmployer = async (payload: EmployerType) => {
+    const { id, ...data } = payload;
+    const response = await axios.put(
+        `http://localhost:8080/api/employees/${id}`,
+        data
+    );
+    return response.data;
+};
+
+export const deleteEmployer = async (id: string | number) => {
+    const response = await axios.delete(`http://localhost:8080/api/employees/${id}`);
+    return response.data;
+};

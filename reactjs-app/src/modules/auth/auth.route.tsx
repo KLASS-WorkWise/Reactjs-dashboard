@@ -1,4 +1,4 @@
-import { UserOutlined } from "@ant-design/icons";
+import {  UserOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
 import LoginPage from "./LoginPage";
 
