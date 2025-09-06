@@ -23,9 +23,9 @@ export const routesEmployer: RouteItem[] = [
                 isPrivate: true,
             },
             {
-                path: '/employer',
+                path: '/employer2',
                 label: <span style={{ fontSize: 17, fontWeight: 'bold' }}>Employers</span>,
-                key: 'employer',
+                key: 'employer2',
                 icon: <DatabaseOutlined style={{ fontSize: 20, color: '#66789c' }} />,
                 element: <EmployerPage />,
                 isShowMenu: true,

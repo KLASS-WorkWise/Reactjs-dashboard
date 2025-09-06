@@ -4,9 +4,9 @@ import DashboardPage from "./DashboardPage";
 
 export const routesDashboard: RouteItem[] = [
   {
-    path: '/',
+    path: '/dashboard',
     label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Dashboard</span>,
-    key: '',
+    key: 'dashboard',
     icon: <HomeOutlined style={{ fontSize: 21, color: '#66789c' }} />,
     element: <DashboardPage />,
     isShowMenu: true, // Hiển thị menu cho route này

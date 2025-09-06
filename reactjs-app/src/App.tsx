@@ -1,5 +1,5 @@
 import './App.css';
-import { BrowserRouter, Routes, Route } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import DashboardLayout from './layouts/DashboardLayout';
 import EmptyLayout from './layouts/EmptyLayout';
 import { routes, type RouteItem } from './routes';
@@ -9,13 +9,36 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { useAuthStore } from './stores/useAuthorStore';
 
 // Create a client
 const queryClient = new QueryClient()
 
+
 // Đệ quy sinh route từ mảng routes
 function renderRoutes(routes: RouteItem[], parentIsPrivate = false) {
+
+  //  hàm để lấy trang thái đăng nhập
+  const { loggedInUser } = useAuthStore();
+
+
+
   return routes.map((route) => {
+
+
+    // ------------------- kiểm tra việc login  --------------------------------
+    // Kiểm tra nếu route là riêng tư và người dùng chưa đăng nhập
+    const isPrivate = route.isPrivate || parentIsPrivate;
+    // nếu là route riêng tư và người dùng chưa đăng nhập thì chặn
+    if (isPrivate && !loggedInUser) {
+      return (
+        <Route key={route.key} path={route.path || ''} element={<NotFoundPage />} />
+      );
+    }
+
+    //  ------------------------ end check -----------------------------
+
+
     const Layout = route.isPrivate || parentIsPrivate ? DashboardLayout : EmptyLayout;
     if (route.children && route.children.length > 0) {
       // Route cha bọc Layout, các con chỉ render element
@@ -44,13 +67,15 @@ function renderRoutes(routes: RouteItem[], parentIsPrivate = false) {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-    <BrowserRouter>
-      <Routes>
-        {renderRoutes(routes)}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
-     {/* The rest of your application */}
+      <BrowserRouter>
+        <Routes>
+          {/* Chuyển hướng từ / về /login */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
+          {renderRoutes(routes)}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+      {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
