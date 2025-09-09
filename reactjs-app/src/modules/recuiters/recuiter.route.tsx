@@ -1,6 +1,7 @@
 import { DatabaseOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
 import RecuiterPage from "./RecuiterPage";
+import CompanyPage from "../companys/CompanyPage";
 
 
 
@@ -10,7 +11,7 @@ export const routesRecuiter: RouteItem[] = [
         label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Recuiters</span>,
         key: 'recuiter',
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
-        element: <RecuiterPage />,
+        element: <CompanyPage  />,
         isShowMenu: true,
         isPrivate: true,
     },
