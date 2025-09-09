@@ -1,4 +1,4 @@
-import { Table, Pagination, Card, Button, Spin } from 'antd';
+import { Table, Card, Button, Spin } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import React from 'react';
 import type { EmployerType } from '../employer.type';
@@ -7,22 +7,26 @@ interface EmployerTableProps {
     data?: EmployerType[];
     loading: boolean;
     columns: ColumnsType<EmployerType>;
-    onAddClick: () => void;
+    pagination?: any;
+    onAddClick?: () => void;
 }
 
 const EmployerTable: React.FC<EmployerTableProps> = ({
-    data,
+    data = [],
     loading,
     columns,
+    pagination,
     onAddClick,
 }) => {
     return (
         <Card
             title="Employer List"
             extra={
-                <Button type="primary" onClick={onAddClick}>
-                    Thêm mới
-                </Button>
+                onAddClick ? (
+                    <Button type="primary" onClick={onAddClick}>
+                        Thêm mới
+                    </Button>
+                ) : null
             }
         >
             {loading ? (
@@ -31,7 +35,7 @@ const EmployerTable: React.FC<EmployerTableProps> = ({
                 </Spin>
             ) : (
                 <>
-                    <Table rowKey="id" columns={columns} dataSource={data} />
+                    <Table rowKey="id" columns={columns} dataSource={data} pagination={pagination} />
                     <div style={{ textAlign: 'right', marginTop: 30 }}>
                     </div>
                 </>
