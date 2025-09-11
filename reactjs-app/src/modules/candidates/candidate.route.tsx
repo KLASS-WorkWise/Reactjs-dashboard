@@ -1,6 +1,6 @@
 import { DatabaseOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
-import CandidatePage from "./CandidatePage";
+import CandidatesApplyPage from "../candidatesApply/CadidatesApplyPage";
 
 
 
@@ -10,7 +10,7 @@ export const routesCandidate: RouteItem[] = [
         label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Candidates</span>,
         key: 'candidate',
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
-        element: <CandidatePage />,
+        element: <CandidatesApplyPage />,
         isShowMenu: true,
         isPrivate: true,
     },

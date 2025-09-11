@@ -9,6 +9,7 @@ const ListEmployerTable = () => {
   const [selectedEmployer, setSelectedEmployer] = useState<any | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+
   const loadData = () => {
     fetchUpgradeEmployers().then((data) => {
       setEmployers(Array.isArray(data?.data) ? data.data : []);
