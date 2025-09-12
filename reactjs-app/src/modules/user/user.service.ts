@@ -2,9 +2,9 @@ import axios from "axios";
 import type { GetAllUserResponse, UserType } from "./user.type";
 
 
-export const fetchUsers = async (): Promise<UserType[]> => {
-  const response = await axios.get<GetAllUserResponse>('http://localhost:8080/api/users');
-  return response.data.data;
+export const fetchUsers = async (page: number = 0): Promise<GetAllUserResponse> => {
+  const response = await axios.get('http://localhost:8080/api/users?page=' + page);
+  return response.data;
 };
 
 export const createUser = async (payload: Omit<UserType, 'id'>) => {

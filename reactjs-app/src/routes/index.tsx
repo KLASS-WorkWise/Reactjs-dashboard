@@ -9,6 +9,7 @@ import { routesRecuiter } from '../modules/recuiters/recuiter.route';
 import { routesCandidate } from '../modules/candidates/candidate.route';
 import { routesChat } from '../modules/Chat/chat.route';
 import { routesjobPosting } from '../modules/jobposting/jobposting.route';
+import { routesSystemLogs } from '../modules/system-logs/systemLogs.route';
 
 export type RouteItem = {
   path?: string;
@@ -19,6 +20,7 @@ export type RouteItem = {
   children?: RouteItem[];
   isShowMenu: boolean; // Thêm thuộc tính này để xác định có hiển thị menu hay không
   isPrivate: boolean; // Thêm thuộc tính này để xác định có phải là route riêng tư hay không
+  roles?: string[]; // Thêm thuộc tính này để xác định vai trò được phép truy cập route
 };
 
 export const routes: RouteItem[] = [
@@ -31,5 +33,6 @@ export const routes: RouteItem[] = [
   ...routesRecuiter,
   ...routesCandidate,
   ...routesChat,
-  ...routesjobPosting
+  ...routesjobPosting,
+  ...routesSystemLogs // Thêm route System Logs cho admin
 ];

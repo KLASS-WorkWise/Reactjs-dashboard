@@ -9,4 +9,10 @@ export interface UserType {
 
 export interface GetAllUserResponse {
   data: UserType[];
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }

@@ -9,6 +9,7 @@ interface UserTableProps {
     data?: UserType[];
     loading: boolean;
     columns: ColumnsType<UserType>;
+    pagination?: any;
     onAddClick: () => void;
 }
 
@@ -17,6 +18,7 @@ const UserTable: React.FC<UserTableProps> = ({
     data,
     loading,
     columns,
+    pagination,
     onAddClick,
 }) => {
     return (
@@ -29,7 +31,7 @@ const UserTable: React.FC<UserTableProps> = ({
                 </Spin>
             ) : (
                 <>
-                    <Table rowKey="id" columns={columns} dataSource={data} />
+                    <Table rowKey="id" columns={columns} dataSource={data} pagination={pagination} />
                     <div style={{ textAlign: 'right', marginTop: 30, marginLeft: 30 }}>
                     </div>
                 </>

@@ -59,6 +59,10 @@ export const useAuthStore = create<AuthState>()(
               false,
               { type: '@AUTH/LOGIN/SUCCESS' }
             );
+              // Lưu role đầu tiên vào localStorage với key 'userRole' dưới dạng lowercase
+              if (response.loggedInUser && response.loggedInUser.roles && response.loggedInUser.roles.length > 0) {
+                localStorage.setItem('userRole', response.loggedInUser.roles[0].trim().toLowerCase());
+              }
             navigate('/dashboard');
           } catch (error) {
             set({ error, access_token: undefined, refresh_token: undefined, loggedInUser: undefined }, false, {
@@ -69,6 +73,7 @@ export const useAuthStore = create<AuthState>()(
 
         logOut: async () => {
           set({ access_token: undefined, refresh_token: undefined, loggedInUser: undefined });
+          localStorage.removeItem('userRole');
         },
       }),
       {

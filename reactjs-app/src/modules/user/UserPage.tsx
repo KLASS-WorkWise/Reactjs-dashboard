@@ -6,8 +6,7 @@ import dayjs from "dayjs";
 import { useAppMessage } from '../../stores/useAppMessage';
 import UserTable from "./components/UserTable";
 import UserUpdate from "./components/UserUpdate";
-import type { UserType } from "./user.type";
-import type { EmployerType } from "../employer/employer.type";
+import type { UserType, GetAllUserResponse } from "./user.type";
 import { deleteUser, fetchUsers, updateUser } from "./user.service";
 
 const UserPage = () => {
@@ -34,12 +33,13 @@ const UserPage = () => {
         })
     };
 
-    //============================ Sử dụng useQuery để fetch data từ API ==========================================
-    const queryUsers = useQuery<UserType[]>({
-        queryKey: ["users"],
-        queryFn: async () => fetchUsers(),
+    //============================ Sử dụng useQuery để fetch data từ API (phân trang) ==========================================
+    const [currentPage, setCurrentPage] = useState(1);
+    const queryUsers = useQuery<GetAllUserResponse>({
+        queryKey: ["users", currentPage],
+        queryFn: async () => fetchUsers(currentPage - 1), // BE page bắt đầu từ 0
+        keepPreviousData: true,
     });
-    // console.log("dữ liệu lấy được khi call api là :", queryEmployers.data);
     //========================== end fetch data=========================================
 
 
@@ -197,10 +197,16 @@ const UserPage = () => {
         <div>
 
             {/* list danh sách user */}
-            <UserTable  // gọi đến tên bên file UserTable
-                data={queryUsers.data}
+            <UserTable
+                data={Array.isArray(queryUsers.data?.data) ? queryUsers.data?.data : []}
                 loading={queryUsers.isLoading}
                 columns={columns}
+                pagination={{
+                    current: (queryUsers.data?.pageNumber ?? 0) + 1,
+                    pageSize: queryUsers.data?.pageSize ?? 10,
+                    total: queryUsers.data?.totalRecords ?? 0,
+                    onChange: (page: number) => setCurrentPage(page),
+                }}
                 onAddClick={() => setIsModalAddOpen(true)}
             />
 

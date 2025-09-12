@@ -45,6 +45,12 @@ export default function LoginPage() {
     mode: "onChange",
   });
 
+  React.useEffect(() => {
+    if (loginStore.loggedInUser && loginStore.loggedInUser.roles && loginStore.loggedInUser.roles.length > 0) {
+      localStorage.setItem('userRole', loginStore.loggedInUser.roles[0].trim().toLowerCase());
+    }
+  }, [loginStore.loggedInUser]);
+
   const onSubmit: SubmitHandler<IFormInput> = async (data) => {
     setLoginError(null);
     try {
@@ -53,7 +59,7 @@ export default function LoginPage() {
         password: data.password,
         navigate,
       });
-      // Nếu login thành công, store sẽ navigate sang dashboard
+      // Không lưu role ở đây nữa
     } catch (error: any) {
       // Nếu backend trả về lỗi dạng error.response.data.Error
       const errMsg = error?.response?.data?.Error?.[0] || "Đã có lỗi xảy ra. Vui lòng thử lại , kiểm tra kĩ password hoặc username.";

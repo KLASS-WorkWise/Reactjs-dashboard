@@ -9,7 +9,11 @@ import "./style.css";
 export default function CustomHeader() {
     const [scroll, setScroll] = useState(false);
 
-    const { loggedInUser } = useAuthStore();
+    const { loggedInUser, logOut } = useAuthStore();
+    const handleLogout = async () => {
+        await logOut();
+        window.location.href = '/login';
+    };
 
     useEffect(() => {
         const handleScroll = () => setScroll(window.scrollY > 100);
@@ -63,12 +67,12 @@ export default function CustomHeader() {
                             </Menu.Item>
                             <Menu.Item>
                                 {({ active }) => (
-                                    <Link
-                                        to="/login"
-                                        className={`dropdown-item block px-4 py-2 ${active ? "bg-gray-100" : ""}`}
+                                    <button
+                                        onClick={handleLogout}
+                                        className={`dropdown-item block px-4 py-2 w-full text-left ${active ? "bg-gray-100" : ""}`}
                                     >
                                         Logout
-                                    </Link>
+                                    </button>
                                 )}
                             </Menu.Item>
                         </Menu.Items>

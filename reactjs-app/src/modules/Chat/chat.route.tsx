@@ -13,5 +13,6 @@ export const routesChat: RouteItem[] = [
         element: <ChatPage />,
         isShowMenu: true,
         isPrivate: true,
+        roles: ['employers'],
     },
 ]

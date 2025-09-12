@@ -11,8 +11,9 @@ export const routesRecuiter: RouteItem[] = [
         label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Recuiters</span>,
         key: 'recuiter',
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
-        element: <CompanyPage  />,
+        element: <CompanyPage />,
         isShowMenu: true,
         isPrivate: true,
+        roles: ['administrators'],
     },
 ]

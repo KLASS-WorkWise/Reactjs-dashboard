@@ -1,4 +1,4 @@
-import { DatabaseOutlined, UnorderedListOutlined,CheckCircleOutlined } from "@ant-design/icons";
+import { DatabaseOutlined, UnorderedListOutlined, CheckCircleOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
 import EmployerPage from "./EmployerPage";
 import EmployerUpgradeList from "./EmployerUpgradeList";
@@ -13,11 +13,12 @@ export const routesEmployer: RouteItem[] = [
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
         isShowMenu: true,
         isPrivate: true,
+        roles: ['administrators'],
         children: [
             {
                 path: '/employer',
                 label: <span style={{ fontSize: 17, fontWeight: 'bold' }}>Employer List</span>,
-                key: 'employer',
+                key: 'employer-list', // Đổi key cho duy nhất
                 icon: <UnorderedListOutlined style={{ fontSize: 16, color: '#66789c' }} />,
                 element: <EmployerPage />,
                 isShowMenu: true,
