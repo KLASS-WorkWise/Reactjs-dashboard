@@ -2,6 +2,7 @@
 import Axios, { type InternalAxiosRequestConfig } from 'axios';
 
 const URL = 'http://localhost:8080/api'; 
+console.log("🚀 ~ 8080:", 8080)
 
 const apiClient = Axios.create({
   baseURL: URL,
