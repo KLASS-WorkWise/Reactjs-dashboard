@@ -1,43 +1,61 @@
 import './App.css';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import DashboardLayout from './layouts/DashboardLayout';
 import EmptyLayout from './layouts/EmptyLayout';
 import { routes, type RouteItem } from './routes';
-import { useAuthStore } from './stores/useAuthorStore';
 import NotFoundPage from './modules/notfound/NotFoundPage';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import { useAuthStore } from './stores/useAuthorStore';
 
 // Create a client
 const queryClient = new QueryClient()
 
+
 // Đệ quy sinh route từ mảng routes
 function renderRoutes(routes: RouteItem[], parentIsPrivate = false) {
-  // Dùng hook để luôn lấy trạng thái mới nhất
+
+  //  hàm để lấy trang thái đăng nhập
   const { loggedInUser } = useAuthStore();
+
+
+
   return routes.map((route) => {
+
+
+    // ------------------- kiểm tra việc login  --------------------------------
+    // Kiểm tra nếu route là riêng tư và người dùng chưa đăng nhập
     const isPrivate = route.isPrivate || parentIsPrivate;
-    const Layout = isPrivate ? DashboardLayout : EmptyLayout;
+    // nếu là route riêng tư và người dùng chưa đăng nhập thì chặn
     if (isPrivate && !loggedInUser) {
       return (
         <Route key={route.key} path={route.path || ''} element={<NotFoundPage />} />
       );
     }
+
+    //  ------------------------ end check -----------------------------
+
+
+    const Layout = route.isPrivate || parentIsPrivate ? DashboardLayout : EmptyLayout;
     if (route.children && route.children.length > 0) {
+      // Route cha bọc Layout, các con chỉ render element
       return (
         <Route key={route.key} path={route.path || ''} element={<Layout />}>
+          {/* Nếu có element ở cha, render ở index */}
           {route.element && <Route index element={route.element} />}
+          {/* Các route con không bọc lại Layout */}
           {route.children.map(child =>
             child.children && child.children.length > 0
-              ? renderRoutes([child], isPrivate)
+              ? renderRoutes([child], route.isPrivate || parentIsPrivate)
               : <Route key={child.key} path={child.path || ''} element={child.element || <div>{child.label} Page</div>} />
           )}
         </Route>
       );
     }
+    // Route không có children, vẫn bọc Layout phù hợp
     return (
       <Route key={route.key} path={route.path || ''} element={<Layout />}>
         {route.element && <Route index element={route.element} />}

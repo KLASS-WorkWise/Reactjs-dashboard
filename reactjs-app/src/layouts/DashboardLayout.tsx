@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Dropdown, Menu } from "antd";
-
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
 } from '@ant-design/icons';
 
 import { routes, type RouteItem } from '../routes';
-import { Layout, Menu as AntMenu, Button, theme, message } from 'antd';
-import { useNavigate, Outlet, Link } from "react-router";
+import { Layout, Menu, Button, theme, message } from 'antd';
 
-import { useAuthStore } from '../stores/useAuthorStore';
+import '../styles/sidebar-custom.css';
+import { useNavigate, Outlet } from "react-router";
 
 const { Header, Sider, Content, Footer } = Layout;
 
+
+
+
+
 import type { MenuProps } from 'antd';
 import { useAppMessage } from '../stores/useAppMessage';
-import CustomHeader from "./Header";
-
-
+import CustomHeader from './Header';
 type MenuItem = Required<MenuProps>['items'][number];
 
 // Chuyển đổi mảng routes sang định dạng items của Antd Menu
@@ -56,26 +56,11 @@ const DefaultLayout: React.FC = () => {
 
   const navigate = useNavigate();
 
+
   const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
-
-  // logout 
-  const { loggedInUser, logOut } = useAuthStore();
-  const handleLogout = async () => {
-    await logOut();
-    navigate('/login');
-  };
-
-  // Dropdown menu cho avatar
-  const avatarMenu = (
-    <Menu>
-      <Menu.Item key="logout" danger onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
 
   return (
     <>
@@ -100,19 +85,18 @@ const DefaultLayout: React.FC = () => {
       />
       <Layout hasSider style={{ minHeight: '100vh' }}>
         <Sider trigger={null} collapsible collapsed={collapsed}
+          width={240} // tăng chiều rộng sidebar
+          collapsedWidth={80}
           style={{
             position: "fixed",
             top: 64, // đúng bằng chiều cao header
             left: 0,
-            height: "calc(100vh - 64px)",
             background: "#fff",
-            zIndex: 10,
             overflow: "auto",
+            height: "100vh", // trừ đi chiều cao header
           }}
         >
-          {/* <div className="sidebar_logo">{collapsed ? 'A' : 'Admin'}</div> */}
-
-          <AntMenu
+          <Menu
             theme="light"
             mode="inline"
             items={items}
@@ -122,8 +106,19 @@ const DefaultLayout: React.FC = () => {
             }}
           />
         </Sider>
-        <Layout style={{ marginLeft: collapsed ? '80px' : '200px' }}>
+        <Layout style={{ marginLeft: collapsed ? '80px' : '240px', transition: 'margin-left 0.2s' }}>    {/* tùy chỉnh kích thước phần nội dung dưới header ( dashboard...)  */}
+          <Header style={{
+            padding: 0,
+            background: colorBgContainer,
+            position: 'sticky',
+            top: 0,
+            zIndex: 1
+          }}
 
+            className='drop-shadow-sm'
+          >
+
+          </Header>
 
           <Content
             style={{
@@ -134,11 +129,12 @@ const DefaultLayout: React.FC = () => {
               overflow: 'initial'
             }}
           >
+
             <Outlet />
           </Content>
           <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
         </Layout>
-      </Layout>
+      </Layout >
     </>
   );
 };

@@ -7,14 +7,14 @@ import {
   GlobalOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
+import "./EmployerDetailModal.css";
 
 interface EmployerDetailModalProps {
   open: boolean;
   onCancel: () => void;
   employer: any | null;
-
-  onApprove?: () => void;   // thêm callback cho Phê duyệt
-  onReject?: () => void;    // thêm callback cho Từ chối
+  onApprove?: () => void;
+  onReject?: () => void;
 }
 
 const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
@@ -34,94 +34,96 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
       centered
       width={750}
       title={
-        <span className="text-blue-700 font-bold text-xl">
-          Hồ sơ công ty
-        </span>
+        <span className="employer-modal-title">Hồ sơ công ty</span>
       }
-      className="rounded-2xl overflow-hidden p-0"
+      className="employer-modal-root"
     >
       {info ? (
-        <div className="space-y-6 text-base">
+        <div className="employer-modal-content">
           {/* Banner + Avatar */}
-          <div className="relative">
+          <div className="employer-modal-banner-wrap">
             <img
               src={info.bannerUrl || "/assets/static/default-banner.jpg"}
               alt="Banner"
-              className="w-full h-48 object-cover"
+              className="employer-modal-banner"
             />
-            <img
-              src={info.logoUrl || "/assets/static/default-avatar.png"}
-              alt="Logo"
-              className="absolute left-10 -bottom-12 w-28 h-28 object-cover rounded-full border-4 border-white shadow-lg bg-white"
-            />
+            <div className="employer-modal-avatar-wrap">
+              <img
+                src={info.logoUrl || "/assets/static/default-avatar.png"}
+                alt="Logo"
+                className="employer-modal-avatar"
+              />
+            </div>
           </div>
 
           {/* Company Info */}
-          <div className="mt-14 px-10 pb-6">
-            <h2 className="text-3xl font-bold text-blue-700 mb-4">
+          <div className="employer-modal-info">
+            <h2 className="employer-modal-company-name">
               {info.companyName}
             </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-3 gap-x-8">
-              <p>
-                <MailOutlined className="mr-2 text-blue-500" />
-                <strong>Email:</strong> {info.email}
+            <div className="employer-modal-info-grid">
+              <p className="employer-modal-info-row">
+                <MailOutlined className="employer-modal-icon" />
+                <span className="employer-modal-label">Email:</span>
+                <span className="employer-modal-value">{info.email}</span>
               </p>
-              <p>
-                <PhoneOutlined className="mr-2 text-blue-500" />
-                <strong>Phone:</strong> {info.phone}
+              <p className="employer-modal-info-row">
+                <PhoneOutlined className="employer-modal-icon" />
+                <span className="employer-modal-label">Phone:</span>
+                <span className="employer-modal-value">{info.phone}</span>
               </p>
-              <p>
-                <EnvironmentOutlined className="mr-2 text-blue-500" />
-                <strong>Địa chỉ:</strong> {info.address}
+              <p className="employer-modal-info-row">
+                <EnvironmentOutlined className="employer-modal-icon" />
+                <span className="employer-modal-label">Địa chỉ:</span>
+                <span className="employer-modal-value">{info.address}</span>
               </p>
-              <p>
-                <GlobalOutlined className="mr-2 text-blue-500" />
-                <strong>Website:</strong>{" "}
+              <p className="employer-modal-info-row">
+                <GlobalOutlined className="employer-modal-icon" />
+                <span className="employer-modal-label">Website:</span>
                 <a
                   href={info.website}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-500 underline"
+                  className="employer-modal-link"
                 >
                   {info.website}
                 </a>
               </p>
-              <p>
-                <strong>Ngành nghề:</strong> {info.industry}
+              <p className="employer-modal-info-row">
+                <span className="employer-modal-label">Ngành nghề:</span> {info.industry}
               </p>
-              <p>
-                <TeamOutlined className="mr-2 text-blue-500" />
-                <strong>Quy mô:</strong> {info.minEmployees} - {info.maxEmployees}
+              <p className="employer-modal-info-row">
+                <TeamOutlined className="employer-modal-icon" />
+                <span className="employer-modal-label">Quy mô:</span>
+                <span className="employer-modal-value">{info.minEmployees} - {info.maxEmployees}</span>
               </p>
             </div>
-
-            <div className="mt-4">
-              <strong className="block mb-1 text-blue-600">Mô tả:</strong>
-              <p className="text-justify leading-relaxed">{info.description}</p>
+            <div className="employer-modal-desc-wrap">
+              <span className="employer-modal-desc-label">Mô tả:</span>
+              <p className="employer-modal-desc">{info.description}</p>
             </div>
-
-            <div className="mt-5">
-              <strong className="text-blue-600 mr-2">Trạng thái:</strong>
+            <div className="employer-modal-status-wrap">
+              <span className="employer-modal-status-label">Trạng thái:</span>
               <span
-                className={`px-3 py-1 rounded-full text-sm font-medium ${
+                className={`employer-modal-status-badge ${
                   info.status === "APPROVED"
-                    ? "bg-green-100 text-green-700"
-                    : "bg-yellow-100 text-yellow-700"
+                    ? "employer-modal-status-approved"
+                    : info.status === "PENDING"
+                    ? "employer-modal-status-pending"
+                    : "employer-modal-status-rejected"
                 }`}
               >
                 {info.status}
               </span>
             </div>
-
             {/* BUTTONS */}
-            <div className="flex justify-end space-x-3 mt-6">
+            <div className="employer-modal-btn-group">
               <Button
                 onClick={() => {
                   if (onReject) onReject();
                 }}
                 danger
-                className="font-semibold"
+                className="employer-modal-btn-reject"
               >
                 Từ chối
               </Button>
@@ -130,7 +132,7 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
                 onClick={() => {
                   if (onApprove) onApprove();
                 }}
-                className="bg-blue-600 font-semibold"
+                className="employer-modal-btn-approve"
               >
                 Phê duyệt
               </Button>
@@ -138,7 +140,7 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
           </div>
         </div>
       ) : (
-        <p className="py-10 text-center text-gray-500">Không có thông tin công ty.</p>
+        <p className="employer-modal-empty">Không có thông tin công ty.</p>
       )}
     </Modal>
   );
