@@ -14,5 +14,6 @@ export const routesRecuiter: RouteItem[] = [
         element: <CompanyPage  />,
         isShowMenu: true,
         isPrivate: true,
+        roles : ["Administrators"], // hoặc ["Employers"]
     },
 ]

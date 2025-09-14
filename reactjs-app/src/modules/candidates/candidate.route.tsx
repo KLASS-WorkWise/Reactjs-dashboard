@@ -13,5 +13,6 @@ export const routesCandidate: RouteItem[] = [
         element: <CandidatePage />,
         isShowMenu: true,
         isPrivate: true,
+        roles : ["Administrators"], // hoặc ["Employers"]
     },
 ]
