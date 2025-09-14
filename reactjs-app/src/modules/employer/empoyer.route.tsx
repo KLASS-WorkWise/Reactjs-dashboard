@@ -18,7 +18,7 @@ export const routesEmployer: RouteItem[] = [
             {
                 path: '/employer',
                 label: <span style={{ fontSize: 17, fontWeight: 'bold' }}>Employer List</span>,
-                key: 'employerlist',
+                key: 'employer',
                 icon: <UnorderedListOutlined style={{ fontSize: 16, color: '#66789c' }} />,
                 element: <EmployerPage />,
                 isShowMenu: true,
