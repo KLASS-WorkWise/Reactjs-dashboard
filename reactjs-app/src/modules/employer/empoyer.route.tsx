@@ -13,6 +13,7 @@ export const routesEmployer: RouteItem[] = [
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
         isShowMenu: true,
         isPrivate: true,
+        roles : ["Administrators"], // hoặc ["Employers"]
         children: [
             {
                 path: '/employer',

@@ -1,44 +1,54 @@
 import React, { useEffect, useState } from 'react';
-import {
-  MenuUnfoldOutlined,
-  MenuFoldOutlined,
-} from '@ant-design/icons';
+import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button, theme, message } from 'antd';
+import type { MenuProps } from 'antd';
+import { useNavigate, Outlet } from "react-router";
 
 import { routes, type RouteItem } from '../routes';
-import { Layout, Menu, Button, theme, message } from 'antd';
+import { useAuthStore } from '../stores/useAuthorStore';
+import { useAppMessage } from '../stores/useAppMessage';
+import CustomHeader from './Header';
 
 import '../styles/sidebar-custom.css';
-import { useNavigate, Outlet } from "react-router";
 
 const { Header, Sider, Content, Footer } = Layout;
 
-
-
-
-
-import type { MenuProps } from 'antd';
-import { useAppMessage } from '../stores/useAppMessage';
-import CustomHeader from './Header';
 type MenuItem = Required<MenuProps>['items'][number];
 
-// Chuyển đổi mảng routes sang định dạng items của Antd Menu
-function mapRoutesToMenuItems(routes: RouteItem[]): MenuItem[] {
+/**
+ * Lọc menu theo role user và chuyển đổi sang items của Antd Menu
+ */
+function mapRoutesToMenuItems(routes: RouteItem[], userRoles: string[]): MenuItem[] {
   return routes
-    .filter(route => route.isShowMenu)
-    .map(route => {
+    .filter(
+      (route) =>
+        route.isShowMenu &&
+        (!route.roles || route.roles.some((role) => userRoles.includes(role)))
+    )
+    .map((route) => {
       const item: MenuItem = {
         label: route.label,
         key: route.key,
         icon: route.icon ?? null,
-        children: route.children ? mapRoutesToMenuItems(route.children) : undefined,
+        children: route.children
+          ? mapRoutesToMenuItems(route.children, userRoles)
+          : undefined,
       };
       return item;
     });
 }
 
-const items = mapRoutesToMenuItems(routes);
-
 const DefaultLayout: React.FC = () => {
+  const userRoles = useAuthStore((state) => state.loggedInUser?.roles || []);
+  const loading = useAuthStore((state) => state.loading);
+  // Nếu đang loading hoặc chưa có role thì render loading
+  if (loading || !userRoles.length) {
+    return <div style={{padding: 40, textAlign: 'center'}}>Loading...</div>;
+  }
+  const items = mapRoutesToMenuItems(routes, userRoles);
+
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
 
   const [messageApi, contextHolder] = message.useMessage();
   const { msg, type, clearMessage } = useAppMessage();
@@ -54,18 +64,18 @@ const DefaultLayout: React.FC = () => {
     }
   }, [msg, type, messageApi, clearMessage]);
 
-  const navigate = useNavigate();
-
-
-  const [collapsed, setCollapsed] = useState(false);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
+
+  // Lấy role và trạng thái loading từ store
 
   return (
     <>
       {contextHolder}
       <CustomHeader />
+
+      {/* Nút toggle Sidebar */}
       <Button
         type="text"
         icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -75,7 +85,7 @@ const DefaultLayout: React.FC = () => {
           top: 12,
           left: collapsed ? 12 : 250,
           zIndex: 101,
-          fontSize: '20px',
+          fontSize: "20px",
           width: 40,
           height: 40,
           background: "#fff",
@@ -83,9 +93,14 @@ const DefaultLayout: React.FC = () => {
           borderRadius: "50%",
         }}
       />
-      <Layout hasSider style={{ minHeight: '100vh' }}>
-        <Sider trigger={null} collapsible collapsed={collapsed}
-          width={240} // tăng chiều rộng sidebar
+
+      <Layout hasSider style={{ minHeight: "100vh" }}>
+        {/* Sidebar */}
+        <Sider
+          trigger={null}
+          collapsible
+          collapsed={collapsed}
+          width={240}
           collapsedWidth={80}
           style={{
             position: "fixed",
@@ -93,7 +108,7 @@ const DefaultLayout: React.FC = () => {
             left: 0,
             background: "#fff",
             overflow: "auto",
-            height: "100vh", // trừ đi chiều cao header
+            height: "100vh",
           }}
         >
           <Menu
@@ -101,40 +116,46 @@ const DefaultLayout: React.FC = () => {
             mode="inline"
             items={items}
             onClick={({ key }) => {
-              navigate('/' + key.split('-').join('/'));
-              console.log(key);
+              navigate("/" + key.split("-").join("/"));
             }}
           />
         </Sider>
-        <Layout style={{ marginLeft: collapsed ? '80px' : '240px', transition: 'margin-left 0.2s' }}>    {/* tùy chỉnh kích thước phần nội dung dưới header ( dashboard...)  */}
-          <Header style={{
-            padding: 0,
-            background: colorBgContainer,
-            position: 'sticky',
-            top: 0,
-            zIndex: 1
+
+        {/* Nội dung chính */}
+        <Layout
+          style={{
+            marginLeft: collapsed ? "80px" : "240px",
+            transition: "margin-left 0.2s",
           }}
-
-            className='drop-shadow-sm'
-          >
-
-          </Header>
+        >
+          <Header
+            style={{
+              padding: 0,
+              background: colorBgContainer,
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+            }}
+            className="drop-shadow-sm"
+          />
 
           <Content
             style={{
-              margin: '16px',
+              margin: "16px",
               padding: 16,
               minHeight: 280,
               background: colorBgContainer,
-              overflow: 'initial'
+              overflow: "initial",
             }}
           >
-
             <Outlet />
           </Content>
-          <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
+
+          <Footer style={{ textAlign: "center" }}>
+            Ant Design ©2023 Created by Ant UED
+          </Footer>
         </Layout>
-      </Layout >
+      </Layout>
     </>
   );
 };

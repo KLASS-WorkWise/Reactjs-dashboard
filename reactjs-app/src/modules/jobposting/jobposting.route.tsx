@@ -13,5 +13,6 @@ export const routesjobPosting: RouteItem[] = [
         element: <JobPostingPage />,
         isShowMenu: true,
         isPrivate: true,
+        roles : ["Employers"], // Chỉ Admin và Manager có quyền truy cập
     },
 ];

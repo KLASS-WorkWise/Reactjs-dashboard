@@ -13,7 +13,7 @@ const apiClient = Axios.create({
 
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const authStorage = localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!) : null;
+  const authStorage = localStorage.getItem('auth-storage-for-login') ? JSON.parse(localStorage.getItem('auth-storage-for-login')!) : null;
 
     const access_token = authStorage?.state?.access_token;
 
@@ -36,7 +36,7 @@ apiClient.interceptors.request.use(
 
 const refreshToken = async () => {
   try {
-    const storage = localStorage.getItem('auth-storage') ? JSON.parse(localStorage.getItem('auth-storage')!) : null;
+  const storage = localStorage.getItem('auth-storage-for-login') ? JSON.parse(localStorage.getItem('auth-storage-for-login')!) : null;
 
     const refresh_token = storage?.state?.refresh_token;
 
@@ -61,7 +61,7 @@ const refreshToken = async () => {
     }
 
     localStorage.setItem(
-      'auth-storage',
+      'auth-storage-for-login',
       JSON.stringify({
         state: {
           ...storage.state,
@@ -76,7 +76,7 @@ const refreshToken = async () => {
     console.error('Failed to refresh token:', error);
     // If refresh token is invalid (401/403), clear storage and redirect
     if (error.response?.status === 401 || error.response?.status === 403) {
-      localStorage.removeItem('auth-storage');
+  localStorage.removeItem('auth-storage-for-login');
       window.location.href = '/login';
     }
     return null;
@@ -148,7 +148,7 @@ apiClient.interceptors.response.use(
         } else {
           processQueue(error, null);
           console.error('Unable to refresh token, redirecting to login');
-          localStorage.removeItem('auth-storage');
+          localStorage.removeItem('auth-storage-for-login');
           window.location.href = '/login';
           return Promise.reject(error);
         }
