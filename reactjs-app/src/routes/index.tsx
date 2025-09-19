@@ -9,6 +9,8 @@ import { routesRecuiter } from "../modules/recuiters/recuiter.route";
 import { routesCandidate } from "../modules/candidates/candidate.route";
 import { routesChat } from "../modules/Chat/chat.route";
 import { routesjobPosting } from "../modules/jobposting/jobposting.route";
+import { routesDeposit } from "../modules/deposit/deposit.route";
+import { routesProfile } from "../modules/profile/profile.route";
 import { routesBlog } from "../modules/blog/blog.router";
 import { routesCategory } from "../modules/category/category.route";
 import { routesOurTeam } from "../modules/ourTeam/ourTeam.router";
@@ -23,6 +25,7 @@ export type RouteItem = {
   children?: RouteItem[];
   isShowMenu: boolean; // Thêm thuộc tính này để xác định có hiển thị menu hay không
   isPrivate: boolean; // Thêm thuộc tính này để xác định có phải là route riêng tư hay không
+  roles?: string[]; // Thêm thuộc tính này để xác định các vai trò được phép truy cập route
 };
 
 export const routes: RouteItem[] = [
@@ -40,4 +43,6 @@ export const routes: RouteItem[] = [
   ...routesCategory,
   ...routesOurTeam,
   ...aboutUsRoute,
+  ...routesDeposit,
+  ...routesProfile,
 ];
