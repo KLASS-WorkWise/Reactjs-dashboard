@@ -12,14 +12,23 @@ export const createUser = async (payload: Omit<UserType, 'id'>) => {
   return response.data;
 };
 
+
+import { useAuthStore } from '../../stores/useAuthorStore';
+
 export const updateUser = async (payload: UserType) => {
   const { id, ...data } = payload;
-  const response = await axios.patch(`http://localhost:8080/api/users/${id}`, data);
+  const token = useAuthStore.getState().access_token;
+  const response = await axios.patch(
+    `http://localhost:8080/api/users/${id}`,
+    data,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
   return response.data;
 };
 
-export const deleteUser = async (id: string | number) => {
-  const response = await axios.delete(`http://localhost:8080/api/users/${id}`);
-  return response.data;
-};
+
 

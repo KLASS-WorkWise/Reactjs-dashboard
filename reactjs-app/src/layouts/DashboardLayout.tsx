@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { MenuUnfoldOutlined, MenuFoldOutlined } from '@ant-design/icons';
-import { Layout, Menu, Button, theme, message } from 'antd';
-import type { MenuProps } from 'antd';
+
+import React, { useEffect, useState } from "react";
+import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
+import { Layout, Menu, Button, theme, message } from "antd";
+import type { MenuProps } from "antd";
 import { useNavigate, Outlet } from "react-router";
 
-import { routes, type RouteItem } from '../routes';
-import { useAuthStore } from '../stores/useAuthorStore';
-import { useAppMessage } from '../stores/useAppMessage';
-import CustomHeader from './Header';
+import { routes, type RouteItem } from "../routes";
+import { useAuthStore } from "../stores/useAuthorStore";
+import { useAppMessage } from "../stores/useAppMessage";
+import CustomHeader from "./Header";
 
-import '../styles/sidebar-custom.css';
+import "../styles/sidebar-custom.css";
 
 const { Header, Sider, Content, Footer } = Layout;
 
-type MenuItem = Required<MenuProps>['items'][number];
+type MenuItem = Required<MenuProps>["items"][number];
 
 /**
  * Lọc menu theo role user và chuyển đổi sang items của Antd Menu
@@ -41,11 +42,6 @@ function mapRoutesToMenuItems(routes: RouteItem[], userRoles: string[]): MenuIte
 const DefaultLayout: React.FC = () => {
   const userRoles = useAuthStore((state) => state.loggedInUser?.roles || []);
   const loading = useAuthStore((state) => state.loading);
-  // Nếu đang loading hoặc chưa có role thì render loading
-  if (loading || !userRoles.length) {
-    return <div style={{padding: 40, textAlign: 'center'}}>Loading...</div>;
-  }
-  const items = mapRoutesToMenuItems(routes, userRoles);
 
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
@@ -68,7 +64,12 @@ const DefaultLayout: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
-  // Lấy role và trạng thái loading từ store
+  // Nếu đang loading hoặc chưa có role thì render loading
+  if (loading || !userRoles.length) {
+    return <div style={{ padding: 40, textAlign: "center" }}>Loading...</div>;
+  }
+
+  const items = mapRoutesToMenuItems(routes, userRoles);
 
   return (
     <>
@@ -108,7 +109,7 @@ const DefaultLayout: React.FC = () => {
             left: 0,
             background: "#fff",
             overflow: "auto",
-            height: "100vh",
+            height: "calc(100vh - 64px)", // trừ đi chiều cao header
           }}
         >
           <Menu
