@@ -11,6 +11,10 @@ import { routesChat } from '../modules/Chat/chat.route';
 import { routesjobPosting } from '../modules/jobposting/jobposting.route';
 import { routesDeposit } from '../modules/deposit/deposit.route';
 import { routesProfile } from '../modules/profile/profile.route';
+import { routesSystemLog } from '../modules/systemlog/systemlog.route';
+import { routesManagerJob } from '../modules/managermentJob/managerjob.route';
+import { routesBannerEmployer } from '../modules/bannerEmployer/banneremployer.route';
+import { routesBannerAdmin } from '../modules/bannerAdmin/banneradmin.route';
 
 export type RouteItem = {
   path?: string;
@@ -19,22 +23,26 @@ export type RouteItem = {
   icon?: ReactNode;
   element?: React.ReactNode | null;
   children?: RouteItem[];
-  isShowMenu: boolean; // Thêm thuộc tính này để xác định có hiển thị menu hay không
-  isPrivate: boolean; // Thêm thuộc tính này để xác định có phải là route riêng tư hay không
-  roles?: string[]; // Thêm thuộc tính này để xác định các vai trò được phép truy cập route
+  isShowMenu: boolean; // xác định có hiển thị menu hay không
+  isPrivate: boolean;  // xác định có phải là route riêng tư hay không
+  roles?: string[];    // xác định các vai trò được phép truy cập route
 };
 
 export const routes: RouteItem[] = [
-  ...routesDashboard, //đăng ký route dashboard
+  ...routesDashboard,   // đăng ký route dashboard
   ...routesAuth,
   // ...routesProduct,
   // ...routesAdministrator,
-  ...routesEmployer, //đăng ký route employer
+  ...routesEmployer,    // đăng ký route employer
   ...routesUser,
   ...routesRecuiter,
   ...routesCandidate,
   ...routesChat,
-  ...routesjobPosting
-  ,...routesDeposit
-  ,...routesProfile
+  ...routesjobPosting,
+  ...routesDeposit,
+  ...routesProfile,
+  ...routesSystemLog,
+  ...routesManagerJob,
+  ...routesBannerEmployer,
+  ...routesBannerAdmin,
 ];

@@ -27,7 +27,7 @@ const DashboardPage = () => {
   const currentMonthIdx = new Date().getMonth(); // 0-based
 
   // Chuẩn hóa month từ API về dạng "Jan", "Feb", ...
-  function normalizeMonth(raw) {
+  function normalizeMonth(raw: string | number | null | undefined) {
     if (!raw) return null;
     if (typeof raw === "number" || /^\d+$/.test(String(raw))) {
       const idx = Number(raw) - 1;
@@ -39,7 +39,10 @@ const DashboardPage = () => {
   }
 
   // Fill dữ liệu từ Jan đến tháng hiện tại
-  function fillMonthsToCurrent(data, valueKey = "value") {
+  function fillMonthsToCurrent(
+    data: Array<{ month: string | number | null | undefined; [key: string]: any }> | undefined,
+    valueKey = "value"
+  ) {
     const map = new Map();
     (data || []).forEach(item => {
       const m = normalizeMonth(item.month);
@@ -129,7 +132,7 @@ const DashboardPage = () => {
     label: {
       type: "inner",
       offset: "-30%",
-      content: ({ value }) => `${value}%`,
+      content: ({ value }: { value: number }) => `${value}%`,
       style: { fontSize: 14, fontWeight: 600 },
     },
     height: 160,
