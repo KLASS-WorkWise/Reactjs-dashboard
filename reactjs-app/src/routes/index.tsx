@@ -8,7 +8,7 @@ import { routesUser } from '../modules/user/user.route';
 import { routesRecuiter } from '../modules/recuiters/recuiter.route';
 import { routesCandidate } from '../modules/candidates/candidate.route';
 import { routesChat } from '../modules/Chat/chat.route';
-import { routesjobPosting } from '../modules/jobposting/jobposting.route';
+import { routesjobPosting } from '../modules/employeeJobApplicant/jobposting.route';
 import { routesDeposit } from '../modules/deposit/deposit.route';
 import { routesProfile } from '../modules/profile/profile.route';
 
