@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Line, Column, Pie } from "@ant-design/plots";
 import { Card, Row, Col, Typography } from "antd";
+
 const { Title, Text } = Typography;
+
 const DashboardPage = () => {
   // State cho thống kê
   const [stats, setStats] = useState({
@@ -12,17 +14,20 @@ const DashboardPage = () => {
     totalJobPostings: 0,
     totalApplications: 0,
   });
-  // vẽ biểu đồ colum và line set dlieu ban đầu là rỗng
+
+  // vẽ biểu đồ colum và line set dlieu ban đầu là rỗng 
   const [chartData, setChartData] = useState({
     userGrowth: [],
     jobPosting: [],
     conversion: 0,
   });
+
   // Hàm chuẩn hóa dữ liệu chỉ hiển thị đến tháng hiện tại
   const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const currentMonthIdx = new Date().getMonth(); // 0-based
+
   // Chuẩn hóa month từ API về dạng "Jan", "Feb", ...
-  function normalizeMonth(raw) {
+  function normalizeMonth(raw: string | number | null | undefined) {
     if (!raw) return null;
     if (typeof raw === "number" || /^\d+$/.test(String(raw))) {
       const idx = Number(raw) - 1;
@@ -32,8 +37,12 @@ const DashboardPage = () => {
     const three = s.slice(0, 3).toLowerCase();
     return three.charAt(0).toUpperCase() + three.slice(1);
   }
+
   // Fill dữ liệu từ Jan đến tháng hiện tại
-  function fillMonthsToCurrent(data, valueKey = "value") {
+  function fillMonthsToCurrent(
+    data: Array<{ month: string | number | null | undefined; [key: string]: any }> | undefined,
+    valueKey = "value"
+  ) {
     const map = new Map();
     (data || []).forEach(item => {
       const m = normalizeMonth(item.month);
@@ -46,12 +55,14 @@ const DashboardPage = () => {
       value: map.get(month) || 0,
     }));
   }
+
   // Lấy dữ liệu từ api overview
   useEffect(() => {
     axios.get("http://localhost:8080/api/statistics/overview")
       .then(res => setStats(res.data))
       .catch(err => console.error("Error fetching overview:", err));
   }, []);
+
   // Lấy dữ liệu từ api chart
   useEffect(() => {
     const year = new Date().getFullYear();
@@ -66,9 +77,11 @@ const DashboardPage = () => {
       })
       .catch(err => console.error("Error fetching chart-data:", err));
   }, []);
+
   // Chuẩn hóa dữ liệu cho chart
   const userGrowthData = fillMonthsToCurrent(chartData.userGrowth);
   const jobPostingData = fillMonthsToCurrent(chartData.jobPosting);
+
   // dữ liệu mẫu cho CV (giữ nguyên)
   const cvSubmittedData = [
     { month: "Jul", value: 120 },
@@ -78,13 +91,15 @@ const DashboardPage = () => {
     { month: "Nov", value: 310 },
     { month: "Dec", value: 370 },
   ];
+
   // Conversion Rate lấy từ API thay vì hard-code
   const conversionRate = Math.round(chartData.conversion); // làm tròn nếu cần
   const conversionData = [
     { type: "Converted", value: conversionRate },
     { type: "Not Converted", value: 100 - conversionRate },
   ];
-  // Config charts
+
+  // Config charts 
   const userGrowthConfig = {
     data: userGrowthData,
     xField: "month",
@@ -117,24 +132,27 @@ const DashboardPage = () => {
     label: {
       type: "inner",
       offset: "-30%",
-      content: ({ value }) => `${value}%`,
+      content: ({ value }: { value: number }) => `${value}%`,
       style: { fontSize: 14, fontWeight: 600 },
     },
     height: 160,
   };
+
   // Giao diện các thẻ thống kê ngang
   const statCards = [
-    { title: "Users", value: stats.totalUsers, icon: ":bust_in_silhouette:", color: "#4F8AFF" },
-    { title: "Employers", value: stats.totalEmployers, icon: ":office:", color: "#6DD400" },
-    { title: "Candidates", value: stats.totalCandidates, icon: ":office_worker:", color: "#FFC542" },
-    { title: "Job Postings", value: stats.totalJobPostings, icon: ":page_facing_up:", color: "#FF6B6B" },
-    { title: "Applications", value: stats.totalApplications, icon: ":incoming_envelope:", color: "#9B8AFC" },
+    { title: "Users", value: stats.totalUsers, icon: "👤", color: "#4F8AFF" },
+    { title: "Employers", value: stats.totalEmployers, icon: "🏢", color: "#6DD400" },
+    { title: "Candidates", value: stats.totalCandidates, icon: "🧑‍💼", color: "#FFC542" },
+    { title: "Job Postings", value: stats.totalJobPostings, icon: "📄", color: "#FF6B6B" },
+    { title: "Applications", value: stats.totalApplications, icon: "📨", color: "#9B8AFC" },
   ];
+
   return (
     <div style={{ padding: 20 }}>
       <Title level={3} style={{ marginBottom: 20 }}>
         Admin Analytics
       </Title>
+
       {/* Thẻ thống kê ngang */}
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {statCards.map(card => (
@@ -147,6 +165,7 @@ const DashboardPage = () => {
           </Col>
         ))}
       </Row>
+
       <Row gutter={[20, 20]}>
         {/* User Growth */}
         <Col xs={24} md={12}>
@@ -157,6 +176,7 @@ const DashboardPage = () => {
             <Line {...userGrowthConfig} />
           </Card>
         </Col>
+
         {/* Job Postings */}
         <Col xs={24} md={12}>
           <Card>
@@ -166,6 +186,7 @@ const DashboardPage = () => {
             <Column {...jobPostingConfig} />
           </Card>
         </Col>
+
         {/* Conversion Rate */}
         <Col xs={24} md={12}>
           <Card>
@@ -175,6 +196,7 @@ const DashboardPage = () => {
             <Pie {...conversionConfig} />
           </Card>
         </Col>
+
         {/* CV Submitted */}
         <Col xs={24} md={12}>
           <Card>
@@ -188,4 +210,5 @@ const DashboardPage = () => {
     </div>
   );
 };
+
 export default DashboardPage;

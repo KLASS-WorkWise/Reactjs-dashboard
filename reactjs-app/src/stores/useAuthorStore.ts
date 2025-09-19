@@ -47,6 +47,7 @@ export const useAuthStore = create<AuthState>()(
             );
 
             const response: any = await apiClient.post('api/auth/login', { username, password });
+            console.log('Login response:', response);
 
             set(
               {

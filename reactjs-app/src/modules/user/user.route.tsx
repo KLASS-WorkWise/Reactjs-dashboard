@@ -10,5 +10,6 @@ export const routesUser: RouteItem[] = [
         element: <UserPage />,
         isShowMenu: true,
         isPrivate: true,
+        roles : ["Administrators"], // Chỉ Admin và Manager có quyền truy cập
     },
 ];

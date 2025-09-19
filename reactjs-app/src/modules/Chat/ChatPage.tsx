@@ -1,29 +1,71 @@
-import React from 'react'
-import { doc, setDoc } from "firebase/firestore";
-import { Button } from 'antd';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React from 'react';
+import { addDoc, collection, onSnapshot, query, QuerySnapshot, Timestamp } from 'firebase/firestore';
+import { Button, Form, Input } from 'antd';
 import { db } from './libraries/firebase/initializaApp';
 
-type Props = {}
+export default function ChatPage() {
+  const [messages, setMessages] = React.useState<any[]>([]);
 
-export default function ChatPage({ }: Props) {
-  const handleAddData = async () => {
+  const messagesRef = collection(db, `messages`);
 
-    const docRef = doc(db, "tablemessage", "messagejob"); // cái tablemessage là tên collection ( tên của cái bảng), messagejob là tên document ( hay còn gọi dc là id)
-    await setDoc(docRef, {   // gọi cái setDoc để thêm dữ liệu vào trong firebase ( như kiểu lưu dlieu vào bảng á)
-      content: "hello job",
+  React.useEffect(() => {
+    const q = query(messagesRef);
+    const unsubscribe = onSnapshot(q, (querySnapshot: QuerySnapshot) => {
+      const items: any[] = [];
+
+      querySnapshot.forEach((doc) => {
+        console.log(doc.id, ' => ', doc.data());
+
+        items.push(doc.data());
+      });
+
+      const sortedItems = items.sort((a, b) => {
+        return (a.created_at as Timestamp).toMillis() - (b.created_at as Timestamp).toMillis();
+      });
+
+      setMessages(sortedItems);
     });
-  }
 
+    // Unsubscribe from the listener when the component unmounts
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const onFinish = async (values: any) => {
+    console.log('Received values:', values);
+    const docRef = await addDoc(collection(db, 'messages'), {
+      from: values.username,
+      // to: 'nhannn@softech.vn',
+      content: values.message,
+      created_at: Timestamp.fromDate(new Date()),
+    });
+
+    console.log('Document written with ID: ', docRef.id);
+  };
 
   return (
-    <div>
-      <h1> xây dựng phần chat giữa hr và ứng viên</h1>
+    <div className="p-4">
+      <Form name="chat" onFinish={onFinish}>
+        <Form.Item name="username">
+          <Input placeholder="Username" />
+        </Form.Item>
+        <Form.Item name="message">
+          <Input placeholder="Message" />
+        </Form.Item>
+        <Form.Item label={null}>
+          <Button type="primary" htmlType="submit">
+            Send message
+          </Button>
+        </Form.Item>
+      </Form>
 
-      <Button onClick={handleAddData}>
-        Add data
-      </Button>
+      <ul>
+        {messages.map((message, index) => (
+          <li key={index}>{message?.content}</li>
+        ))}
+      </ul>
     </div>
-
-
-  )
+  );
 }
