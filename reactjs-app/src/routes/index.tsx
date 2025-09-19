@@ -1,20 +1,29 @@
-import type { ReactNode } from 'react';
-import { routesDashboard } from '../modules/dashboard/dashboard.route';
-import { routesAuth } from '../modules/auth/auth.route';
+
+import type { ReactNode } from "react";
+import { routesDashboard } from "../modules/dashboard/dashboard.route";
+import { routesAuth } from "../modules/auth/auth.route";
 // import { routesProduct } from '../modules/product/product.route';
 // import { routesAdministrator } from '../modules/administrator/administrator.route';
-import { routesEmployer } from '../modules/employer/empoyer.route';
-import { routesUser } from '../modules/user/user.route';
-import { routesRecuiter } from '../modules/recuiters/recuiter.route';
-import { routesCandidate } from '../modules/candidates/candidate.route';
-import { routesChat } from '../modules/Chat/chat.route';
-import { routesjobPosting } from '../modules/jobposting/jobposting.route';
-import { routesDeposit } from '../modules/deposit/deposit.route';
-import { routesProfile } from '../modules/profile/profile.route';
-import { routesSystemLog } from '../modules/systemlog/systemlog.route';
-import { routesManagerJob } from '../modules/managermentJob/managerjob.route';
-import { routesBannerEmployer } from '../modules/bannerEmployer/banneremployer.route';
-import { routesBannerAdmin } from '../modules/bannerAdmin/banneradmin.route';
+import { routesEmployer } from "../modules/employer/empoyer.route";
+import { routesUser } from "../modules/user/user.route";
+import { routesRecuiter } from "../modules/recuiters/recuiter.route";
+import { routesCandidate } from "../modules/candidates/candidate.route";
+import { routesChat } from "../modules/Chat/chat.route";
+import { routesjobPosting } from "../modules/jobposting/jobposting.route";
+
+// Nhánh HEAD
+import { routesDeposit } from "../modules/deposit/deposit.route";
+import { routesProfile } from "../modules/profile/profile.route";
+import { routesSystemLog } from "../modules/systemlog/systemlog.route";
+import { routesManagerJob } from "../modules/managermentJob/managerjob.route";
+import { routesBannerEmployer } from "../modules/bannerEmployer/banneremployer.route";
+import { routesBannerAdmin } from "../modules/bannerAdmin/banneradmin.route";
+
+// Nhánh origin/thanhphat
+import { routesBlog } from "../modules/blog/blog.router";
+import { routesCategory } from "../modules/category/category.route";
+import { routesOurTeam } from "../modules/ourTeam/ourTeam.router";
+import { aboutUsRoute } from "../modules/aboutUs/aboutUs.route";
 
 export type RouteItem = {
   path?: string;
@@ -39,10 +48,18 @@ export const routes: RouteItem[] = [
   ...routesCandidate,
   ...routesChat,
   ...routesjobPosting,
+
+  // từ HEAD
   ...routesDeposit,
   ...routesProfile,
   ...routesSystemLog,
   ...routesManagerJob,
   ...routesBannerEmployer,
   ...routesBannerAdmin,
+
+  // từ origin/thanhphat
+  ...routesBlog,
+  ...routesCategory,
+  ...routesOurTeam,
+  ...aboutUsRoute,
 ];
