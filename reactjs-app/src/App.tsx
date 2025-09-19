@@ -10,6 +10,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { useAuthStore } from './stores/useAuthorStore';
+import { Toaster } from "react-hot-toast";
+
 
 // Create a client
 const queryClient = new QueryClient()
@@ -77,6 +79,8 @@ function App() {
       </BrowserRouter>
       {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
+            <Toaster position="top-center" />
+
     </QueryClientProvider>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Form, Input, message, Card, Typography } from "antd";
+import { Button, Form, InputNumber, message, Card, Typography } from "antd";
 import { depositToUser } from "./deposit.service";
 import { useAuthStore } from "../../stores/useAuthorStore";
 import { DollarCircleOutlined } from "@ant-design/icons";
@@ -79,15 +79,14 @@ const DepositPage: React.FC = () => {
             label={<span style={{ fontWeight: 600 }}>💵 Số tiền muốn nạp</span>}
             rules={[{ required: true, message: "Vui lòng nhập số tiền!" }]}
           >
-            <Input
-              type="number"
+            <InputNumber
               min={1000}
               placeholder="Nhập số tiền (VND)"
               size="large"
-              style={{
-                borderRadius: 12,
-                border: "1px solid #d9d9d9",
-              }}
+              style={{ width: "100%", borderRadius: 12, border: "1px solid #d9d9d9" }}
+              formatter={value => value ? Number(value).toLocaleString('vi-VN') : ""}
+              parser={value => value ? value.replace(/\D/g, "") : ""}
+              stringMode={false}
             />
           </Form.Item>
 
