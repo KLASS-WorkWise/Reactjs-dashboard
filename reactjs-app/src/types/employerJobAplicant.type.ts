@@ -1,0 +1,103 @@
+export type JobPosting = {
+  id: number;
+  employerId: number;
+  employerName: string;
+  title: string;
+  description: string;
+  location: string;
+  salaryRange: string;
+  jobType: string;
+  category: string;
+  requiredSkills: string[];
+  minExperience: number;
+  requiredDegree: string;
+  endAt: string;
+  status: string;
+  createdAt: string;
+};
+export type PaginatedEmployeeListJobResponseDto = {
+  data: JobPosting[];
+   pageNumber: number;
+   pageSize: number;
+    totalRecords: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+};
+export type Applicant = {
+  id: number;
+  fullName: string;
+  resumeLink: string;
+  coverLetter: string;
+  skillMatchPercent: number;
+};
+
+
+export type ApplicantResponse = {
+  id: number;
+  jobId: number;
+  candidateId: number;
+  resumesId: number;
+  jobTitle: string;
+
+  fullName: string;
+  companyName: string;
+  logoUrl: string;
+  description_company: string;
+  location_company: string;
+
+  description: string;
+  resumeLink: string;
+  coverLetter: string;
+  appliedAt: string;
+  applicationStatus: string; // ApplicationStatus
+
+  missingSkills: string[];
+  minExperience: string;
+  experienceYears: number;
+  skillMatchPercent: number;
+  isSkillQualified: boolean;
+  isExperienceQualified: boolean;
+  skillMatchMessage: string;
+    history: ApplicantHistory[];
+};
+
+export type ApplicantHistory = {
+  id: number;
+  status: string;
+  note: string;
+  changedAt: string;
+  changedBy: string;
+};
+
+export type ApplicantDetail = {
+  id: number;
+  jobTitle: string;
+  fullName: string;
+  coverLetter: string;
+  applicationStatus: string;
+  appliedAt: string;
+  history: ApplicantHistory[];
+};
+
+export interface TimelineEvent {
+  stepOrder: number;
+  status: string;
+  events: ApplicantHistory[];
+  currentStep: boolean;
+  completed: boolean;
+}
+
+export type ApiResponse<T> = {
+  statusCode: number;
+  error: string | null;
+  message: string | string[] | null;
+  data: T;
+};
+
+
+export interface ApplicantTracking {
+  detail: ApplicantResponse;
+  history: ApplicantHistory[];
+  timeline: TimelineEvent[];
+}
