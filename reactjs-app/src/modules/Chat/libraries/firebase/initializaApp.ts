@@ -1,15 +1,14 @@
 import { initializeApp, getApp, getApps, type FirebaseApp } from 'firebase/app';
-import { Firestore, getFirestore, initializeFirestore } from 'firebase/firestore';
+import { Firestore, getFirestore } from 'firebase/firestore';
 // import { Auth, getAuth, initializeAuth } from 'firebase/auth';
 // Initialize Firebase
 const firebaseConfig = {
-  apiKey: import .meta.env.VITE_APIKEY_FIREBASE,
-  authDomain: "chat-message-331da.firebaseapp.com",
-  projectId: "chat-message-331da",
-  storageBucket: "chat-message-331da.firebasestorage.app",
-  messagingSenderId: "940420138396",
-  appId: "1:940420138396:web:815d2d1bdaa2c86ae23459",
-  measurementId: "G-4X4DZRS23F"
+  apiKey: "AIzaSyDWVDjP4mCYgDkDQR36OMGzqw7TUcS3zJY",
+  authDomain: "work-wise-1fc2e.firebaseapp.com",
+  projectId: "work-wise-1fc2e",
+  storageBucket: "work-wise-1fc2e.firebasestorage.app",
+  messagingSenderId: "954190400565",
+  appId: "1:954190400565:web:321d47c4680c20b981357c"
 };
 
 let firebaseApp: FirebaseApp;
@@ -19,18 +18,10 @@ let fireStore: Firestore;
 
 if (getApps().length < 1) {
   firebaseApp = initializeApp(firebaseConfig);
-  fireStore = initializeFirestore(firebaseApp, {
-    experimentalForceLongPolling: true,
-  });
-  // fireAuth = initializeAuth(firebaseApp, {
-  //   persistence: {
-  //     type: 'LOCAL',
-  //   },
-  // });
+  fireStore = getFirestore(firebaseApp);
 } else {
   firebaseApp = getApp();
-  // fireAuth = getAuth();
-  fireStore = getFirestore();
+  fireStore = getFirestore(firebaseApp);
 }
 
 // Initialize Firebase
