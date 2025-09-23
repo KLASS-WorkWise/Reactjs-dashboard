@@ -94,7 +94,7 @@ export default function LoginPage() {
               <input
                 type="text"
                 placeholder="Enter your username"
-                {...register("username")}
+{...register("username")}
               />
               {errors.username && (
                 <p className="text-red-500 text-sm">{errors.username.message}</p>
