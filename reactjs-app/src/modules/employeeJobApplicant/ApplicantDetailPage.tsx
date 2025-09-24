@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applicantService } from "../../services/applicant.service";
 import type { ApplicantHistory, ApplicantTracking } from "../../types/employerJobAplicant.type";
 import styles from "../../styles/ApplicantDetailPage.module.css";
+import {  ArrowLeftIcon} from "lucide-react";
 
 export const ApplicationStatus = {
   CV_REVIEW: "CV_REVIEW",
@@ -25,7 +26,7 @@ export default function ApplicantDetailPage() {
     setLoading(true);
     try {
       const res = await applicantService.getEmployeeTracking(Number(applicantId));
-      setTracking(res);
+      setTracking(res.data);
     } catch (err) {
       console.error("❌ Lỗi load applicant detail:", err);
     } finally {
@@ -37,8 +38,8 @@ export default function ApplicantDetailPage() {
     fetchDetail();
   }, [applicantId]);
 
-  if (loading) return <p>Đang tải chi tiết ứng viên...</p>;
-  if (!tracking || !tracking.detail) return <p>Không tìm thấy ứng viên.</p>;
+  if (loading) return <p>Loading...</p>;
+  if (!tracking || !tracking.detail) return <p>No candidates found.</p>;
 
   const applicant = tracking.detail;
   const history: ApplicantHistory[] = tracking.history || [];
@@ -47,7 +48,7 @@ export default function ApplicantDetailPage() {
   return (
     <div className={styles.applicantContainer}>
       <button className={styles.applicantBack} onClick={() => navigate(-1)}>
-        ← Quay lại
+        <ArrowLeftIcon></ArrowLeftIcon>
       </button>
 
       <div className={styles.applicantDetailGrid}>
@@ -62,7 +63,7 @@ export default function ApplicantDetailPage() {
          
 
             <p className={styles.applicantInfo}>
-              <strong>Trạng thái hiện tại:</strong>
+              <strong>Current status:</strong>
               <span className={`${styles.applicantStatus} ${styles[`status${currentStatus}`]}`}>
                 {currentStatus}
               </span>
@@ -84,9 +85,9 @@ export default function ApplicantDetailPage() {
         {/* Right Column: Timeline */}
         <div className={styles.applicantRight}>
           <div className={styles.timeline}>
-            <h2>📌 Timeline ứng tuyển</h2>
+            <h2>History</h2>
             {history.length === 0 ? (
-              <p className={styles.applicantInfo}>Chưa có lịch sử.</p>
+              <p className={styles.applicantInfo}>No history yet.</p>
             ) : (
           <ul className={styles.timelineList}>
   {history.map((h, index) => {

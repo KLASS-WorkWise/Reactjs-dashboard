@@ -3,7 +3,7 @@ import type { RouteItem } from "../../routes";
 import EmployerJobsPage from "./EmployerJobsPage";
 import JobApplicantsPage from "./JobApplicantsPage";
 import ApplicantDetailPage from "./ApplicantDetailPage";
-import EmployerJobFormPage from "./EmployerJobFormPage";
+// import EmployerJobFormPage from "./EmployerJobFormPage";
 
 export const routesjobPosting: RouteItem[] = [
   {
@@ -37,24 +37,24 @@ export const routesjobPosting: RouteItem[] = [
         isPrivate: true,
         roles: ["Employers"],
       },
-       {
-          path: "/employerjob/jobs/create", // ✅ route tạo job
-        label: "Tạo job mới",
-        key: "job-create",
-        element: <EmployerJobFormPage />,
-        isShowMenu: false,
-        isPrivate: true,
-        roles: ["Employers"],
-      },
-       {
-        path: "/employerjob/jobs/:id/edit", // ✅ route sửa job
-        label: "Chỉnh sửa job",
-        key: "job-edit",
-        element: <EmployerJobFormPage />,
-        isShowMenu: false,
-        isPrivate: true,
-        roles: ["Employers"],
-      },
+      //  {
+      //     path: "/employerjob/jobs/create", // ✅ route tạo job
+      //   label: "Tạo job mới",
+      //   key: "job-create",
+      //   element: <EmployerJobFormPage />,
+      //   isShowMenu: false,
+      //   isPrivate: true,
+      //   roles: ["Employers"],
+      // },
+      //  {
+      //   path: "/employerjob/jobs/:id/edit", // ✅ route sửa job
+      //   label: "Chỉnh sửa job",
+      //   key: "job-edit",
+      //   element: <EmployerJobFormPage />,
+      //   isShowMenu: false,
+      //   isPrivate: true,
+      //   roles: ["Employers"],
+      // },
   
     
 ];
