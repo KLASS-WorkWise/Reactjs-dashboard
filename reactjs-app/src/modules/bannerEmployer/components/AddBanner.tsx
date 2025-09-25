@@ -4,7 +4,7 @@ import { UploadOutlined } from "@ant-design/icons";
 const { RangePicker } = DatePicker;
 
 import type { UploadRequestOption } from "rc-upload/lib/interface";
-import { createBanner, uploadBannerImage } from "../banneremployer.service";
+import { createBanner } from "../banneremployer.service";
 import { useAuthStore } from '../../../stores/useAuthorStore';
 
 interface AddBannerProps {
@@ -13,7 +13,7 @@ interface AddBannerProps {
   userId: number;
 }
 
-export default function AddBanner({ visible, onClose, userId }: AddBannerProps) {
+export default function AddBanner({ visible, onClose }: AddBannerProps) {
   const [form] = Form.useForm();
   const [imageUrl, setImageUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
@@ -52,7 +52,7 @@ export default function AddBanner({ visible, onClose, userId }: AddBannerProps) 
       if (file) formData.append("bannerImage", file);
   // Lấy access_token từ store bằng import chuẩn
   const { access_token } = useAuthStore.getState();
-  await createBanner(formData, access_token);
+  await createBanner(formData, access_token ?? "");
       message.success("Tạo banner thành công!");
       onClose();
       form.resetFields();

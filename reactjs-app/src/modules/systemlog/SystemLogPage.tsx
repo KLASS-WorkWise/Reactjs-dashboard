@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Table, Typography, Input, Select, DatePicker, Button, Space } from 'antd';
-import { fetchSystemLogs, fetchSystemLogsWithFilter } from './systemlog.service';
+
+import React, { useState } from 'react';
+import { Table, Typography } from 'antd';
+import { useQuery } from '@tanstack/react-query';
+import { fetchSystemLogsPaged } from './systemlog.service';
 import type { SystemLog } from './systemlog.type';
-import dayjs from 'dayjs';
 
 const { Title } = Typography;
 
@@ -48,73 +49,42 @@ const columns = [
   { title: 'Timestamp', dataIndex: 'timestamp', key: 'timestamp', width: 160 },
 ];
 
-const SystemLogPage: React.FC = () => {
-  const [logs, setLogs] = useState<SystemLog[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [actor, setActor] = useState<string>('');
-  const [status, setStatus] = useState<string>('');
-  const [dateRange, setDateRange] = useState<any>(null);
 
-  const handleSearch = async () => {
-    setLoading(true);
-    await fetchSystemLogsWithFilter({
-      actor: actor || undefined,
-      status: status || undefined,
-      start: dateRange && dateRange[0] ? dayjs(dateRange[0]).toISOString() : undefined,
-      end: dateRange && dateRange[1] ? dayjs(dateRange[1]).toISOString() : undefined,
-    })
-      .then(data => setLogs(Array.isArray(data) ? data : []))
-      .finally(() => setLoading(false));
+
+const SystemLogPage = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const querySystemLogs = useQuery({
+    queryKey: ["systemlogs", currentPage],
+    queryFn: async () => fetchSystemLogsPaged(currentPage - 1, 10), // BE page bắt đầu từ 0
+    placeholderData: {
+      data: [],
+      pageNumber: 0,
+      pageSize: 10,
+      totalRecords: 0,
+      totalPages: 0,
+      hasNext: false,
+      hasPrevious: false,
+    },
+  });
+
+  const logs = querySystemLogs.data?.data ?? [];
+  const pagination = {
+    current: (querySystemLogs.data?.pageNumber ?? 0) + 1,
+    pageSize: querySystemLogs.data?.pageSize ?? 10,
+    total: querySystemLogs.data?.totalRecords ?? 0,
+    onChange: (page: number) => setCurrentPage(page),
   };
-
-  useEffect(() => {
-    setLoading(true);
-    fetchSystemLogs()
-      .then(data => setLogs(Array.isArray(data) ? data : []))
-      .finally(() => setLoading(false));
-  }, []);
 
   return (
     <div style={{ padding: 20 }}>
       <Title level={3} style={{ marginBottom: 20 }}>System Logs</Title>
-      <Space style={{ marginBottom: 16 }} wrap>
-        <Input
-          placeholder="Actor (email, username...)"
-          value={actor}
-          onChange={e => setActor(e.target.value)}
-          style={{ width: 200 }}
-        />
-        <Select
-          placeholder="Status"
-          value={status || undefined}
-          onChange={v => setStatus(v)}
-          allowClear
-          style={{ width: 140 }}
-        >
-          <Select.Option value="SUCCESS">SUCCESS</Select.Option>
-          <Select.Option value="FAILURE">FAILURE</Select.Option>
-        </Select>
-        <DatePicker.RangePicker
-          value={dateRange}
-          onChange={setDateRange}
-          style={{ width: 260 }}
-          showTime
-        />
-        <Button type="primary" onClick={handleSearch}>Search</Button>
-        <Button onClick={() => {
-          setActor(''); setStatus(''); setDateRange(null);
-          setLoading(true);
-          fetchSystemLogs()
-            .then(data => setLogs(Array.isArray(data) ? data : []))
-            .finally(() => setLoading(false));
-        }}>Reset</Button>
-      </Space>
       <Table
         columns={columns}
         dataSource={logs}
         rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 20 }}
+        loading={querySystemLogs.isLoading}
+        pagination={pagination}
         scroll={{ x: 800 }}
         style={{ minWidth: 700 }}
       />

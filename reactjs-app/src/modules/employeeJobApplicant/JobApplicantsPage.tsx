@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { applicantService } from "../../services/applicant.service";
 import type { ApplicantResponse } from "../../types/employerJobAplicant.type";
@@ -95,8 +95,8 @@ export default function JobApplicantsPage() {
     setLoading(true);
     try {
       const res = await applicantService.getApplicantsByJob(Number(jobId));
-      setApplicants(res);
-      console.log("✅ applicants:", res);
+      setApplicants(res.data);
+      console.log("✅ applicants:", res.data);
     } catch (err) {
       console.error("❌ Lỗi load applicants:", err);
     } finally {

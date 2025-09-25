@@ -11,7 +11,15 @@ const EmployerPage = () => {
     const queryEmployers = useQuery<EmployerListResponse>({
         queryKey: ["employers", currentPage],
         queryFn: async () => fetchEmployers(currentPage - 1), // BE page bắt đầu từ 0
-        keepPreviousData: true,
+                placeholderData: {
+                    data: [],
+                    pageNumber: 0,
+                    pageSize: 10,
+                    totalRecords: 0,
+                    totalPages: 0,
+                    hasNext: false,
+                    hasPrevious: false,
+                },
     });
 
     const columns: TableProps<EmployerType>['columns'] = [

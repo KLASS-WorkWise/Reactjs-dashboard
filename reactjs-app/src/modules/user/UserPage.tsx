@@ -1,24 +1,16 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Button, Card, Checkbox, DatePicker, Form, Input, message, Modal, Popconfirm, Select, Space, Table, type TableProps } from "antd";
+import { Button , Form,  Space,  type TableProps } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import dayjs from "dayjs";
 import { useAppMessage } from '../../stores/useAppMessage';
 import UserTable from "./components/UserTable";
 import UserUpdate from "./components/UserUpdate";
 import type { UserType } from "./user.type";
-import type { EmployerType } from "../employer/employer.type";
 import { fetchUsers, updateUser } from "./user.service";
 
 const UserPage = () => {
     const queryClient = useQueryClient();
     const { sendMessage } = useAppMessage();
-    const [isModalAddOpen, setIsModalAddOpen] = useState<boolean>(false);
-    const [formAdd] = Form.useForm();
-
-    const handleOkAdd = () => {
-        formAdd.submit();
-    };
 
     const msgSuccess = (msg: string) => {
         sendMessage({
@@ -176,7 +168,6 @@ const UserPage = () => {
                 data={queryUsers.data}
                 loading={queryUsers.isLoading}
                 columns={columns}
-                onAddClick={() => setIsModalAddOpen(true)}
             />
 
 

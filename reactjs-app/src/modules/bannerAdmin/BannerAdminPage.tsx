@@ -1,38 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Card, Table, Button, Tag, Typography, Space, message, Modal, Input } from "antd";
 import { fetchBannerAdmins, approveBannerAdmin, rejectBannerAdmin } from "./banneradmin.service";
 import type { BannerAdminType } from "./banneradmin.type";
 import BannerAdminDelete from "./components/BannerAdminDelete";
 
 const BannerAdminPage = () => {
-  const [banners, setBanners] = useState<BannerAdminType[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data: banners = [], isLoading, refetch } = useQuery<BannerAdminType[]>({
+    queryKey: ["banner-admins"],
+    queryFn: fetchBannerAdmins,
+  });
   const [rejectModal, setRejectModal] = useState(false);
   const [rejectId, setRejectId] = useState<number | null>(null);
   const [rejectReason, setRejectReason] = useState("");
   const [previewVisible, setPreviewVisible] = useState(false);
   const [previewImage, setPreviewImage] = useState<string>("");
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const data = await fetchBannerAdmins();
-      setBanners(data);
-    } catch {
-      message.error("Không lấy được danh sách banner!");
-    }
-    setLoading(false);
-  };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const handleApprove = async (id: number) => {
     try {
       await approveBannerAdmin(id);
       message.success("Duyệt banner thành công!");
-      fetchData();
+      refetch();
     } catch {
       message.error("Duyệt banner thất bại!");
     }
@@ -46,7 +36,7 @@ const BannerAdminPage = () => {
       setRejectModal(false);
       setRejectReason("");
       setRejectId(null);
-      fetchData();
+      refetch();
     } catch {
       message.error("Từ chối banner thất bại!");
     }
@@ -80,7 +70,7 @@ const BannerAdminPage = () => {
       <Space>
         <Button size="small" type="primary" onClick={() => handleApprove(record.id)}>Duyệt</Button>
         <Button size="small" danger onClick={() => { setRejectId(record.id); setRejectModal(true); }}>Từ chối</Button>
-        <BannerAdminDelete id={record.id} onDeleted={fetchData} />
+  <BannerAdminDelete id={record.id} onDeleted={refetch} />
       </Space>
     )}
   ];
@@ -88,7 +78,7 @@ const BannerAdminPage = () => {
   return (
     <Card style={{ margin: 24 }}>
       <Typography.Title level={3}>Quản lý Banner Admin</Typography.Title>
-      <Table dataSource={banners} columns={columns} rowKey="id" loading={loading} pagination={{ pageSize: 10 }} />
+  <Table dataSource={banners} columns={columns} rowKey="id" loading={isLoading} pagination={{ pageSize: 10 }} />
       <Modal
         open={rejectModal}
         title="Nhập lý do từ chối banner"

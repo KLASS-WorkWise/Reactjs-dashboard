@@ -28,10 +28,11 @@ const BannerEmployerPage = () => {
   const userId = useAuthStore((state) => state.loggedInUser?.id);
 
   useEffect(() => {
-    if (userId) fetchBanners();
+    if (typeof userId === "number") fetchBanners();
   }, [userId]);
 
   const fetchBanners = async () => {
+    if (typeof userId !== "number") return;
     setLoading(true);
     try {
       const data = await getBannersByUser(userId);
@@ -184,7 +185,7 @@ const BannerEmployerPage = () => {
           setAddVisible(false);
           fetchBanners();
         }}
-        userId={userId}
+        userId={typeof userId === "number" ? userId : 0}
       />
 
       {/* Modal sửa */}

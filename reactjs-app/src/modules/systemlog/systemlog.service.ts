@@ -1,3 +1,7 @@
+
+import apiClient from '../../libs/api-client';
+import type { SystemLog } from './systemlog.type';
+
 export interface SystemLogFilter {
   actor?: string;
   status?: string;
@@ -18,13 +22,32 @@ export async function fetchSystemLogsWithFilter(filter: SystemLogFilter): Promis
   if (res && Array.isArray(res.data)) return res.data as SystemLog[];
   return [];
 }
-import apiClient from '../../libs/api-client';
-import type { SystemLog } from './systemlog.type';
 
-export async function fetchSystemLogs(): Promise<SystemLog[]> {
-  const res = await apiClient.get('/system-logs');
-  console.log('SystemLog API response:', res);
-  if (Array.isArray(res)) return res as SystemLog[];
-  if (res && Array.isArray(res.data)) return res.data as SystemLog[];
-  return [];
+
+
+export interface SystemLogPagedResponse {
+  data: SystemLog[];
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrevious: boolean;
 }
+
+export async function fetchSystemLogsPaged(page: number = 0, size: number = 10): Promise<SystemLogPagedResponse> {
+  const response = await apiClient.get(`/system-logs?page=${page}&size=${size}`);
+
+  return {
+    data: response.data ?? [],             // không cần .data nữa
+    pageNumber: response.pageNumber ?? 0,
+    pageSize: response.pageSize ?? size,
+    totalRecords: response.totalRecords ?? 0,
+    totalPages: response.totalPages ?? 0,
+    hasNext: response.hasNext ?? false,
+    hasPrevious: response.hasPrevious ?? false,
+  };
+}
+
+
+

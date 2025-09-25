@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axios from "axios";
 import { Line, Column, Pie } from "@ant-design/plots";
 import { Card, Row, Col, Typography } from "antd";

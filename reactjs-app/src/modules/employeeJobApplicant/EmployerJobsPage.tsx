@@ -16,7 +16,8 @@ export default function EmployerJobsPage() {
       setLoading(true);
       try {
         const res = await applicantService.getMyJobs();
-        setJobs(res.data);
+  setJobs(Array.isArray(res.data) ? res.data : []);
+        console.log("xem đây là lỗi gì", res.data);
       } catch (err) {
         console.error("❌ Lỗi load jobs:", err);
       } finally {

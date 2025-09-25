@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applicantService } from "../../services/applicant.service";
 import type { ApplicantHistory, ApplicantTracking } from "../../types/employerJobAplicant.type";
@@ -25,7 +25,7 @@ export default function ApplicantDetailPage() {
     setLoading(true);
     try {
       const res = await applicantService.getEmployeeTracking(Number(applicantId));
-      setTracking(res);
+      setTracking(res.data);
     } catch (err) {
       console.error("❌ Lỗi load applicant detail:", err);
     } finally {

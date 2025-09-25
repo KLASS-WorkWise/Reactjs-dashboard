@@ -30,7 +30,7 @@ export default function EmployerJobFormPage() {
     jobType: "",
     category: "",
     requiredSkills: [],
-    minExperience: "",
+    minExperience: 0,
     requiredDegree: "",
     status: "Active",
     endAt: "",

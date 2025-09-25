@@ -25,7 +25,6 @@ const UserUpdate: React.FC<UserUpdateProps> = ({
     form,
     onFinish,
     onFinishFailed,
-    queryUsers,
 }) => {
     return (
         <Modal

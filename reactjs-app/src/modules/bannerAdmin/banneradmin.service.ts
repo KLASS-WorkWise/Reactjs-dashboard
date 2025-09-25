@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { GetAllBannerAdminResponse, BannerAdminType } from "./banneradmin.type";
+import type {  BannerAdminType } from "./banneradmin.type";
 
 export const fetchBannerAdmins = async (): Promise<BannerAdminType[]> => {
   const response = await axios.get("http://localhost:8080/api/banners");

@@ -1,4 +1,3 @@
-import React from 'react'
 import { doc, setDoc } from "firebase/firestore";
 import { Button } from 'antd';
 import { db } from './libraries/firebase/initializaApp';
