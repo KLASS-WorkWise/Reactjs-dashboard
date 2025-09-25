@@ -5,10 +5,13 @@ import type { DocumentData } from "firebase/firestore";
 import { db } from "./libraries/firebase/initializaApp";
 import { fetchProfile } from "../profile/profile.service";
 
+import type { Timestamp } from "firebase/firestore";
 interface Applicant {
   id: string;
   applicantId: string;
   applicantName?: string;
+  lastTimestamp?: Timestamp;
+  unreadForEmployer?: boolean;
 }
 
 interface SidebarApplicantsProps {
@@ -20,6 +23,7 @@ interface SidebarApplicantsProps {
 const SidebarApplicants: React.FC<SidebarApplicantsProps> = ({ employerId, onSelectApplicant }) => {
   const [applicants, setApplicants] = useState<Applicant[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeId, setActiveId] = useState<string | null>(null);
   // cache fetched applicant names to avoid repeated backend calls
   const nameCache = useRef<Record<string, string>>({});
   const fetching = useRef<Record<string, boolean>>({});
@@ -44,7 +48,18 @@ const SidebarApplicants: React.FC<SidebarApplicantsProps> = ({ employerId, onSel
         id: doc.id,
         applicantId: String(doc.data().applicantId),
         applicantName: doc.data().applicantName,
+        lastTimestamp: doc.data().lastTimestamp,
+        unreadForEmployer: !!doc.data().unreadForEmployer,
       }));
+      // Sắp xếp: tin nhắn mới chưa đọc lên đầu, sau đó theo lastTimestamp
+      list.sort((a, b) => {
+        if (a.unreadForEmployer && !b.unreadForEmployer) return -1;
+        if (!a.unreadForEmployer && b.unreadForEmployer) return 1;
+        if (!a.lastTimestamp && !b.lastTimestamp) return 0;
+        if (!a.lastTimestamp) return 1;
+        if (!b.lastTimestamp) return -1;
+        return b.lastTimestamp.toMillis() - a.lastTimestamp.toMillis();
+      });
       setApplicants(list);
       setLoading(false);
 
@@ -121,16 +136,58 @@ const SidebarApplicants: React.FC<SidebarApplicantsProps> = ({ employerId, onSel
     });
   }, [applicants, employerId]);
 
-  if (loading) return <div>Đang tải...</div>;
-  if (applicants.length === 0) return <div>Chưa có tin nhắn nào nhắn tới bạn</div>;
+  if (loading) return <div style={{padding: 16, textAlign: 'center'}}>Đang tải...</div>;
+  if (applicants.length === 0) return <div style={{padding: 16, textAlign: 'center'}}>Chưa có tin nhắn nào nhắn tới bạn</div>;
+
+  // Avatar mặc định (có thể thay bằng ảnh thật nếu có)
+  const defaultAvatar = (
+    <div style={{
+      width: 36, height: 36, borderRadius: '50%', background: '#e0e7ef',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: '#4a5568', fontSize: 18, marginRight: 12
+    }}>
+      <span role="img" aria-label="avatar">👤</span>
+    </div>
+  );
 
   return (
-    <div>
-      {applicants.map(applicant => (
-        <div key={applicant.id} onClick={() => onSelectApplicant({ applicantId: applicant.applicantId, applicantName: applicant.applicantName })} style={{cursor: "pointer", padding: 8, borderBottom: "1px solid #eee"}}>
-          Ứng viên: {applicant.applicantName || applicant.applicantId}
-        </div>
-      ))}
+    <div style={{background: '#f8fafc', borderRadius: 8, boxShadow: '0 2px 8px #e2e8f0', padding: 8, minWidth: 260}}>
+      {applicants.map(applicant => {
+        const isActive = activeId === applicant.applicantId;
+        return (
+          <div
+            key={applicant.id}
+            onClick={async () => {
+              setActiveId(applicant.applicantId);
+              onSelectApplicant({ applicantId: applicant.applicantId, applicantName: applicant.applicantName });
+              // Đánh dấu đã đọc khi click vào
+              try {
+                await setDoc(doc(db, 'chats', applicant.id), { unreadForEmployer: false }, { merge: true });
+              } catch (e) { console.error('Mark as read failed', e); }
+            }}
+            style={{
+              display: 'flex', alignItems: 'center', cursor: 'pointer',
+              padding: '10px 12px', marginBottom: 4, borderRadius: 6,
+              background: isActive ? '#e0e7ef' : applicant.unreadForEmployer ? '#fef9c3' : 'transparent',
+              border: isActive ? '1.5px solid #3b82f6' : applicant.unreadForEmployer ? '1.5px solid #facc15' : '1px solid #e5e7eb',
+              transition: 'background 0.2s, border 0.2s',
+              boxShadow: isActive ? '0 2px 8px #c7d2fe' : applicant.unreadForEmployer ? '0 2px 8px #fde68a' : undefined
+            }}
+            onMouseEnter={e => (e.currentTarget.style.background = applicant.unreadForEmployer ? '#fef08a' : '#f1f5f9')}
+            onMouseLeave={e => (e.currentTarget.style.background = isActive ? '#e0e7ef' : applicant.unreadForEmployer ? '#fef9c3' : 'transparent')}
+          >
+            {defaultAvatar}
+            <div style={{flex: 1, minWidth: 0}}>
+              <div style={{fontWeight: 600, color: '#1e293b', fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+                {applicant.applicantName || 'Chưa rõ tên'}
+                {applicant.unreadForEmployer && <span style={{marginLeft: 8, color: '#f59e42', fontSize: 13, fontWeight: 700}}>• Mới</span>}
+              </div>
+              <div style={{fontSize: 13, color: '#64748b', marginTop: 2}}>
+                ID: {applicant.applicantId}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
