@@ -1,71 +1,35 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
-import { addDoc, collection, onSnapshot, query, QuerySnapshot, Timestamp } from 'firebase/firestore';
-import { Button, Form, Input } from 'antd';
-import { db } from './libraries/firebase/initializaApp';
+import React, { useState } from "react";
+import SidebarApplicants from "./SidebarApplicants";
+import ChatBox from "./ChatBox";
 
-export default function ChatPage() {
-  const [messages, setMessages] = React.useState<any[]>([]);
+// Giả sử bạn lấy employerId từ context hoặc props
+// For testing use the employerId found in Firestore (e.g. 5)
+const employerId = "5"; // Thay bằng id thực tế của nhà tuyển dụng
+// currentUserId là id của nhà tuyển dụng hiện tại
+const currentUserId = employerId;
 
-  const messagesRef = collection(db, `messages`);
-
-  React.useEffect(() => {
-    const q = query(messagesRef);
-    const unsubscribe = onSnapshot(q, (querySnapshot: QuerySnapshot) => {
-      const items: any[] = [];
-
-      querySnapshot.forEach((doc) => {
-        console.log(doc.id, ' => ', doc.data());
-
-        items.push(doc.data());
-      });
-
-      const sortedItems = items.sort((a, b) => {
-        return (a.created_at as Timestamp).toMillis() - (b.created_at as Timestamp).toMillis();
-      });
-
-      setMessages(sortedItems);
-    });
-
-    // Unsubscribe from the listener when the component unmounts
-    return () => {
-      unsubscribe();
-    };
-  }, []);
-
-  const onFinish = async (values: any) => {
-    console.log('Received values:', values);
-    const docRef = await addDoc(collection(db, 'messages'), {
-      from: values.username,
-      // to: 'nhannn@softech.vn',
-      content: values.message,
-      created_at: Timestamp.fromDate(new Date()),
-    });
-
-    console.log('Document written with ID: ', docRef.id);
-  };
+const ChatPage: React.FC = () => {
+  // selectedApplicant holds both id and optional name
+  const [selectedApplicant, setSelectedApplicant] = useState<{ applicantId: string; applicantName?: string } | null>(null);
+  // Giả sử chatId là kết hợp employerId và applicantId
+  const chatId = selectedApplicant ? `${employerId}_${selectedApplicant.applicantId}` : "";
 
   return (
-    <div className="p-4">
-      <Form name="chat" onFinish={onFinish}>
-        <Form.Item name="username">
-          <Input placeholder="Username" />
-        </Form.Item>
-        <Form.Item name="message">
-          <Input placeholder="Message" />
-        </Form.Item>
-        <Form.Item label={null}>
-          <Button type="primary" htmlType="submit">
-            Send message
-          </Button>
-        </Form.Item>
-      </Form>
-
-      <ul>
-        {messages.map((message, index) => (
-          <li key={index}>{message?.content}</li>
-        ))}
-      </ul>
+    <div style={{ display: "flex", height: "80vh", background: "#fff", borderRadius: 8, boxShadow: "0 2px 8px #eee" }}>
+      <div style={{ width: 280, borderRight: "1px solid #eee", padding: 0 }}>
+        <SidebarApplicants employerId={employerId} onSelectApplicant={setSelectedApplicant} />
+      </div>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+        {selectedApplicant ? (
+          <ChatBox chatId={chatId} currentUserId={currentUserId} initialApplicantName={selectedApplicant.applicantName} />
+        ) : (
+          <div style={{ padding: 32, textAlign: "center", color: "#888" }}>
+            Chọn ứng viên để bắt đầu chat
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default ChatPage;

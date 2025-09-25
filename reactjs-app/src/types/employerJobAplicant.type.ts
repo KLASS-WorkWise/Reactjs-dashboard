@@ -1,3 +1,19 @@
+export interface ApiResponse<T> {
+status: "success" | "error";   // "success" | "error"
+  message?: string;
+  data: T;
+}
+
+export interface PaginatedEmployeeListJobResponseDto<T> {
+  content: T[];        // danh sách job
+  pageNumber: number;        // ⚠️ từ BE trả về 0-based
+  pageSize: number;          // số record mỗi trang
+  totalRecords: number;      // tổng số record
+  totalPages: number;        // tổng số trang
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 export type JobPosting = {
   data: any;
   id: number;
@@ -15,16 +31,18 @@ export type JobPosting = {
   endAt: string;
   status: string;
   createdAt: string;
+  applicantsCount: number;
+   newApplicantsCount: number;
 };
-export type PaginatedEmployeeListJobResponseDto = {
-  data: JobPosting[];
-   pageNumber: number;
-   pageSize: number;
-    totalRecords: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-};
+// export type PaginatedEmployeeListJobResponseDto = {
+//   data: JobPosting[];
+//    pageNumber: number;
+//    pageSize: number;
+//     totalRecords: number;
+//     totalPages: number;
+//     hasNext: boolean;
+//     hasPrevious: boolean;
+// };
 export type Applicant = {
   id: number;
   fullName: string;
@@ -88,13 +106,6 @@ export interface TimelineEvent {
   currentStep: boolean;
   completed: boolean;
 }
-
-export type ApiResponse<T> = {
-  statusCode: number;
-  error: string | null;
-  message: string | string[] | null;
-  data: T;
-};
 
 
 export interface ApplicantTracking {

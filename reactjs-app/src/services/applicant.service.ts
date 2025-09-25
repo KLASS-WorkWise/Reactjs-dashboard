@@ -1,9 +1,10 @@
+
 import apiClient from "../libs/api-client";
 import type {
-  ApiResponse,
   ApplicantResponse,
   ApplicantTracking,
-  PaginatedEmployeeListJobResponseDto,
+
+
   TimelineEvent,
 } from "../types/employerJobAplicant.type";
 
@@ -17,10 +18,44 @@ export const applicantService = {
   return res; // ✅ trả về ApplicantResponse[]
 },
 
-  getMyJobs: () =>
-    apiClient.get<ApiResponse<PaginatedEmployeeListJobResponseDto>>(
-      "/employers-status/jobs"
-    ),
+
+  getMyJobs: async ({
+  page = 1, // FE dùng 1-based
+  size = 6,
+  sortBy = "createdAt",
+  sortDir = "desc",
+  status,
+  isExpired,
+  startDate,
+  endDate,
+}: {
+  page?: number;
+  size?: number;
+  sortBy?: string;
+  sortDir?: string;
+  status?: string;
+  isExpired?: boolean;
+  startDate?: string; // ISO string "2025-09-01T00:00:00"
+  endDate?: string;
+}) => apiClient.get(
+    `/employers-status/jobs`,
+    {
+      params: {
+        page: page - 1, // BE dùng 0-based
+        size,
+        sortBy,
+        sortDir,
+        status,
+        isExpired,
+        startDate,
+        endDate,
+      },
+    }
+  ),
+
+markApplicantsRead: (jobId: number) =>
+  apiClient.put(`/employers-status/jobs/${jobId}/mark-applicants-read`),
+
 
   updateApplicantStatus: (id: number, status: string, note?: string) =>
     apiClient.put<ApplicantResponse>(

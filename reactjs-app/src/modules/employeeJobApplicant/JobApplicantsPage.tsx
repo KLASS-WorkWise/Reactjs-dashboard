@@ -1,8 +1,10 @@
 import  { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import { applicantService } from "../../services/applicant.service";
 import type { ApplicantResponse } from "../../types/employerJobAplicant.type";
 import styles from "../../styles/JobApplicantsPage.module.css"; // đổi import
+import { ArrowLeftIcon, SaveIcon } from "lucide-react";
 
 export const ApplicationStatus = {
   CV_REVIEW: "CV_REVIEW",
@@ -13,7 +15,7 @@ export const ApplicationStatus = {
 } as const;
 
 export type ApplicationStatus =
-  typeof ApplicationStatus[keyof typeof ApplicationStatus];
+  (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
 
 function ApplicantRow({
   applicant,
@@ -40,7 +42,7 @@ function ApplicantRow({
           rel="noopener noreferrer"
           className={styles.cvLink}
         >
-          Xem CV
+          View CV
         </a>
       </td>
       <td>{applicant.applicationStatus}</td>
@@ -66,9 +68,13 @@ function ApplicantRow({
           />
           <button
             className={styles.saveBtn}
-            onClick={() => onUpdate(applicant.id, status as ApplicationStatus, note)}
+            onClick={() =>
+              onUpdate(applicant.id, status as ApplicationStatus, note)
+            }
           >
-            💾 Lưu
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <SaveIcon size={32} />
+            </div>
           </button>
         </div>
       </td>
@@ -77,7 +83,7 @@ function ApplicantRow({
           onClick={() => onDetail(applicant.id)}
           className={styles.detailBtn}
         >
-          Chi tiết
+          Detail
         </button>
       </td>
     </tr>
@@ -96,7 +102,7 @@ export default function JobApplicantsPage() {
     try {
       const res = await applicantService.getApplicantsByJob(Number(jobId));
       setApplicants(res.data);
-      console.log("✅ applicants:", res.data);
+      console.log("✅ applicants:", res);
     } catch (err) {
       console.error("❌ Lỗi load applicants:", err);
     } finally {
@@ -114,31 +120,31 @@ export default function JobApplicantsPage() {
     note: string
   ) => {
     if (!status) {
-      alert("⚠️ Vui lòng chọn trạng thái");
+      toast.error("⚠️ Please select a status");
       return;
     }
     try {
       await applicantService.updateApplicantStatus(applicantId, status, note);
       await fetchApplicants();
-      alert("✅ Cập nhật trạng thái thành công");
+      toast.success(" Update status success");
     } catch (err) {
       console.error("❌ Lỗi update status:", err);
-      alert("❌ Không thể cập nhật trạng thái");
+      toast.error(" Update status failed");
     }
   };
 
   return (
     <div className={styles.jobApplicants}>
       <button className={styles.backBtn} onClick={() => navigate(-1)}>
-        ← Back
+        <ArrowLeftIcon></ArrowLeftIcon>
       </button>
 
-      <h1 className={styles.pageTitle}>Danh sách ứng viên cho Job #{jobId}</h1>
+      {/* <h1 className={styles.pageTitle}>Danh sách ứng viên cho Job #{jobId}</h1> */}
 
       {loading ? (
-        <p>Đang tải danh sách ứng viên...</p>
+        <p>Loading candidate list...</p>
       ) : applicants.length === 0 ? (
-        <p>Chưa có ứng viên nào.</p>
+        <p>No candidates found.</p>
       ) : (
         <table className={styles.applicantsTable}>
           <thead>

@@ -67,4 +67,3 @@ export const routes: RouteItem[] = [
   ...routesOurTeam,
   ...aboutUsRoute,
 ];
-
