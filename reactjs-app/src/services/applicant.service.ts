@@ -57,12 +57,19 @@ markApplicantsRead: (jobId: number) =>
   apiClient.put(`/employers-status/jobs/${jobId}/mark-applicants-read`),
 
 
-  updateApplicantStatus: (id: number, status: string, note?: string) =>
-    apiClient.put<ApplicantResponse>(
-      `/employers-status/applicants/${id}/status`,
-      null,
-      { params: { status, note } }
-    ),
+updateApplicantStatus: (
+  id: number,
+  status: string,
+  note?: string,
+  scheduledAt?: string,
+  location?: string,
+  interviewer?: string
+) =>
+  apiClient.put<ApplicantResponse>(
+    `/employers-status/applicants/${id}/status`,
+    { newStatus: status, note, scheduledAt, location, interviewer }
+  ),
+
 
   getApplicantDetail: async (id: number) => {
     return apiClient.get<ApplicantTracking>(`/applicant/detail/${id}`);

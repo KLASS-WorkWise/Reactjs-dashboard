@@ -23,13 +23,23 @@ function ApplicantRow({
   onDetail,
 }: {
   applicant: ApplicantResponse;
-  onUpdate: (id: number, status: ApplicationStatus, note: string) => void;
+  onUpdate: (
+    id: number,
+    status: ApplicationStatus,
+    note: string,
+    scheduledAt?: string,
+    location?: string,
+    interviewer?: string
+  ) => void;
   onDetail: (id: number) => void;
 }) {
   const [status, setStatus] = useState<ApplicationStatus | "">(
     applicant.applicationStatus as ApplicationStatus
   );
   const [note, setNote] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [location, setLocation] = useState("");
+  const [interviewer, setInterviewer] = useState("");
 
   return (
     <tr>
@@ -60,16 +70,57 @@ function ApplicantRow({
               </option>
             ))}
           </select>
+
+          {/* nếu status = INTERVIEW thì hiện thêm form */}
+          {status === ApplicationStatus.INTERVIEW && (
+            <div className={styles.interviewForm}>
+              <input
+                type="datetime-local"
+                value={scheduledAt}
+                onChange={(e) => setScheduledAt(e.target.value)}
+                className={styles.datetimeInput}
+                placeholder="Scheduled interview date/time"
+              />
+              <textarea
+                placeholder="Location ..."
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className={styles.noteInput}
+              />
+              <textarea
+                placeholder="Interviewer ..."
+                value={interviewer}
+                onChange={(e) => setInterviewer(e.target.value)}
+                className={styles.noteInput}
+              />
+              {/* <input
+                type="text"
+                value={interviewer}
+                onChange={(e) => setInterviewer(e.target.value)}
+                className={styles.input}
+                placeholder="Interviewer name"
+              /> */}
+            </div>
+          )}
+          {/* note chung */}
           <textarea
             placeholder="Notes for candidates..."
             value={note}
             onChange={(e) => setNote(e.target.value)}
             className={styles.noteInput}
           />
+
           <button
             className={styles.saveBtn}
             onClick={() =>
-              onUpdate(applicant.id, status as ApplicationStatus, note)
+              onUpdate(
+                applicant.id,
+                status as ApplicationStatus,
+                note,
+                scheduledAt || undefined,
+                location || undefined,
+                interviewer || undefined
+              )
             }
           >
             <div style={{ display: "flex", justifyContent: "center" }}>
@@ -117,14 +168,31 @@ export default function JobApplicantsPage() {
   const handleUpdateStatus = async (
     applicantId: number,
     status: ApplicationStatus,
-    note: string
+    note?: string,
+    scheduledAt?: string,
+    location?: string,
+    interviewer?: string
   ) => {
     if (!status) {
       toast.error("⚠️ Please select a status");
       return;
     }
+
+    // Nếu là INTERVIEW thì validate thêm
+    if (status === ApplicationStatus.INTERVIEW && !scheduledAt) {
+      toast.error("⚠️ Please select scheduled interview date/time");
+      return;
+    }
+
     try {
-      await applicantService.updateApplicantStatus(applicantId, status, note);
+      await applicantService.updateApplicantStatus(
+        applicantId,
+        status,
+        note,
+        scheduledAt,
+        location,
+        interviewer
+      );
       await fetchApplicants();
       toast.success(" Update status success");
     } catch (err) {
