@@ -8,3 +8,5 @@ export interface SystemLog {
   level: string;
   targetUserId?: number | null;
 }
+
+

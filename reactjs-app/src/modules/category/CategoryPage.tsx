@@ -118,7 +118,7 @@ const CategoryPage = () => {
   return (
     <div>
       <CategoryTable
-        data={categories ?? []}
+        data={Array.isArray(categories) ? categories : categories?.data ?? []}
         loading={isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}

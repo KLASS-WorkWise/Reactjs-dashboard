@@ -81,12 +81,11 @@ const DepositPage: React.FC = () => {
           >
             <InputNumber
               min={1000}
+              step={1000}
+              precision={0}
               placeholder="Nhập số tiền (VND)"
               size="large"
               style={{ width: "100%", borderRadius: 12, border: "1px solid #d9d9d9" }}
-              formatter={value => value ? Number(value).toLocaleString('vi-VN') : ""}
-              parser={value => value ? value.replace(/\D/g, "") : ""}
-              stringMode={false}
             />
           </Form.Item>
 

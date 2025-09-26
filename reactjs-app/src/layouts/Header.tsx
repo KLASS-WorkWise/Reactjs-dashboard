@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { Menu } from "@headlessui/react";
 import { useAuthStore } from "../stores/useAuthorStore";
-import { BellOutlined } from "@ant-design/icons";
 import { Bell } from "lucide-react";
 import "./style.css";
 
