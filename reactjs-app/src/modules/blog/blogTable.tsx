@@ -1,5 +1,5 @@
 import { Table, Card, Button, Spin, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 import type { ColumnsType } from "antd/es/table";
 import React from "react";
 import type { BlogType } from "./blog.type";
@@ -9,6 +9,7 @@ interface BlogTableProps {
   loading: boolean;
   onEdit?: (blog: BlogType) => void;
   onDelete?: (id: number) => void;
+  onPreview?: (blog: BlogType) => void;
   onAddClick?: () => void;
 }
 
@@ -17,6 +18,7 @@ const BlogTable: React.FC<BlogTableProps> = ({
   loading,
   onEdit,
   onDelete,
+  onPreview,
   onAddClick,
 }) => {
   const handleDelete = (id: number) => {
@@ -86,9 +88,17 @@ const BlogTable: React.FC<BlogTableProps> = ({
     {
       title: "Thao tác",
       key: "action",
-      width: 120,
+      width: 190,
       render: (_, record) => (
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 5 }}>
+          <Button
+            type="default"
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => onPreview?.(record)}
+          >
+            Xem
+          </Button>
           <Button
             type="primary"
             size="small"

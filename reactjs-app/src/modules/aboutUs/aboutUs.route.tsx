@@ -15,5 +15,6 @@ export const aboutUsRoute: RouteItem[] = [
     element: <AboutUsPage />,
     isShowMenu: true,
     isPrivate: true,
+    roles : [ "Administrators"]
   },
 ];

@@ -15,5 +15,6 @@ export const routesBlog: RouteItem[] = [
     element: <BlogPage />,
     isShowMenu: true,
     isPrivate: true,
+    roles : [ "Administrators"]
   },
 ];

@@ -15,5 +15,6 @@ export const routesOurTeam: RouteItem[] = [
     icon: <TeamOutlined style={{ fontSize: 21, color: "#66789c" }} />,
     isShowMenu: true,
     isPrivate: true,
+    roles : [ "Administrators"]
   },
 ];

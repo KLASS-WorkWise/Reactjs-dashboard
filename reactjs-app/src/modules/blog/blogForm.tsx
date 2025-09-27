@@ -1,9 +1,12 @@
+"use client";
+
 import { Form, Input, Select, Button, Upload, message } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import React, { useEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useState } from "react";
 import TiptapEditor from "./TiptapEditor"; // Import TiptapEditor
-import "./tiptap.css"; // Import Tiptap styles
-import type { BlogType, CreateBlogRequest, CategoryType } from "./blog.type";
+import "./tiptap.css"; // Updated import path for styles
+import type { BlogType, CreateBlogRequest, CategoryType } from "./blog.type"; // Updated import path
 import type { UploadFile, UploadProps } from "antd";
 
 const { TextArea } = Input;
@@ -314,7 +317,7 @@ const BlogForm: React.FC<BlogFormProps> = ({
           },
         ]}
       >
-        <TiptapEditor value={undefined} onChange={undefined} onBlur={undefined} />
+        <TiptapEditor />
       </Form.Item>
 
       {/* Upload không bind trực tiếp vào field để tránh gửi object */}

@@ -8,7 +8,7 @@ import UserTable from "./components/UserTable";
 import UserUpdate from "./components/UserUpdate";
 import type { UserType } from "./user.type";
 import type { EmployerType } from "../employer/employer.type";
-import { deleteUser, fetchUsers, updateUser } from "./user.service";
+import { fetchUsers, updateUser } from "./user.service";
 
 const UserPage = () => {
     const queryClient = useQueryClient();
@@ -100,20 +100,7 @@ const UserPage = () => {
 
     // end update users
 
-    const deleteMutationUser = useMutation({
-        mutationFn: deleteUser,
-        onSuccess: () => {
-            //Thông báo xóa thành công
-            console.log('Xóa thành công');
-            //làm tươi lại danh sách
-            queryClient.invalidateQueries({ queryKey: ["users"] })
-            msgSuccess("Xóa user thành công!");
-        },
-        onError: (error) => {
-            console.log('<<=== 🚀 error ===>>', error);
-            msgError("Xóa user thất bại!");
-        }
-    })
+    // Đã bỏ chức năng xóa user
 
     // delete employer
 
@@ -150,10 +137,10 @@ const UserPage = () => {
                             <span
                                 key={i}
                                 className={`px-3 py-1 text-sm font-semibold rounded-full ${role === "Administrators"
-                                    ? "bg-red-100 text-red-600"
+                                    ? " text-red-600"
                                     : role === "Employers"
-                                        ? "bg-yellow-100 text-yellow-600"
-                                        : "bg-green-100 text-green-600"
+                                        ? " text-yellow-600"
+                                        : " text-green-600"
                                     }`}
                             >
                                 {role}
@@ -175,19 +162,7 @@ const UserPage = () => {
                         showModalUpdate(record);
                     }}>Edit</Button>
 
-                    <Popconfirm
-                        title="Delete the task"
-                        description="Are you sure to delete this task?"
-                        onConfirm={async () => {
-                            console.log('ok xoa');
-                            await deleteMutationUser.mutateAsync(record.id)
-                        }}
-                        okText="Yes"
-                        cancelText="No"
-                        placement="left"
-                    >
-                        <Button danger type='dashed'>Delete</Button>
-                    </Popconfirm>
+                    {/* Đã bỏ nút xóa user */}
                 </Space>
             ),
         },

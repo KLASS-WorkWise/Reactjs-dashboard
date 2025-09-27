@@ -15,5 +15,6 @@ export const routesCategory: RouteItem[] = [
     element: <CategoryPage />,
     isShowMenu: true,
     isPrivate: true,
+    roles : [ "Administrators"]
   },
 ];

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 import './App.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -10,6 +11,8 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { useAuthStore } from './stores/useAuthorStore';
+import { Toaster } from "react-hot-toast";
+
 
 // Create a client
 const queryClient = new QueryClient()
@@ -77,6 +80,8 @@ function App() {
       </BrowserRouter>
       {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
+            <Toaster position="top-center" />
+
     </QueryClientProvider>
   );
 }
