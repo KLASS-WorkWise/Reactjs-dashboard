@@ -45,8 +45,7 @@ const BannerAdminPage = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Tiêu đề", dataIndex: "bannerTitle", key: "bannerTitle" },
-    { title: "Vị trí", dataIndex: "position", key: "position" },
+    { title: "Vị trí", dataIndex: "bannerType ", key: "bannerType " },
     { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
     { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
     { title: "Trạng thái", dataIndex: "status", key: "status", render: (status: string) => {
@@ -68,9 +67,13 @@ const BannerAdminPage = () => {
     { title: "Link", dataIndex: "bannerLink", key: "bannerLink", render: (url: string) => url ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : null },
     { title: "Action", key: "action", render: (_: any, record: BannerAdminType) => (
       <Space>
-        <Button size="small" type="primary" onClick={() => handleApprove(record.id)}>Duyệt</Button>
-        <Button size="small" danger onClick={() => { setRejectId(record.id); setRejectModal(true); }}>Từ chối</Button>
-  <BannerAdminDelete id={record.id} onDeleted={refetch} />
+        {(record.status === "PENDING") ? (
+          <>
+            <Button size="small" type="primary" onClick={() => handleApprove(record.id)}>Duyệt</Button>
+            <Button size="small" danger onClick={() => { setRejectId(record.id); setRejectModal(true); }}>Từ chối</Button>
+          </>
+        ) : null}
+        <BannerAdminDelete id={record.id} onDeleted={refetch} />
       </Space>
     )}
   ];
