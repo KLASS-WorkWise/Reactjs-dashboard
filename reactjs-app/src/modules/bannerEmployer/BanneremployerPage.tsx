@@ -72,8 +72,7 @@ const BannerEmployerPage = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Tiêu đề", dataIndex: "bannerTitle", key: "bannerTitle" },
-    { title: "Vị trí", dataIndex: "position", key: "position" },
+    { title: "Loại banner", dataIndex: "bannerType", key: "bannerType" },
     { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
     { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
     {
@@ -109,17 +108,6 @@ const BannerEmployerPage = () => {
               setPreviewVisible(true);
             }}
           />
-        ) : null,
-    },
-    {
-      title: "Link",
-      dataIndex: "bannerLink",
-      key: "bannerLink",
-      render: (url: string) =>
-        url ? (
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {url}
-          </a>
         ) : null,
     },
     {
