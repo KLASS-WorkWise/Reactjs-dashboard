@@ -125,7 +125,7 @@ export default function ApplicantDetailPage() {
           </div>
         </div>
         {/* Right Column: Timeline */}
-        {/* <div className={styles.applicantRight}>
+        <div className={styles.applicantRight}>
           <div className={styles.timeline}>
             <h2>Timeline</h2>
             {tracking.timeline.length === 0 ? (
@@ -197,7 +197,7 @@ export default function ApplicantDetailPage() {
               </ul>
             )}
           </div>
-        </div> */}
+        </div> 
       </div>
     </div>
   );

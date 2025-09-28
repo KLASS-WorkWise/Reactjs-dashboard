@@ -148,14 +148,14 @@ const BannerEmployerPage = () => {
 
   return (
     <Card style={{ margin: 24 }}>
-      <Typography.Title level={3}>Quản lý Banner công ty</Typography.Title>
+      <Typography.Title level={3}>Advertising rental management</Typography.Title>
 
       <Button
         type="primary"
         onClick={() => setAddVisible(true)}
         style={{ marginBottom: 16 }}
       >
-        Tạo banner mới
+        Create new banner
       </Button>
 
       <Table
