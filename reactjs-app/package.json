@@ -20,6 +20,7 @@
     "@tanstack/react-query-devtools": "^5.83.0",
     "@tiptap/react": "^3.4.4",
     "@tiptap/starter-kit": "^3.4.4",
+    "@types/react-icons": "^2.2.7",
     "ant-design": "^1.0.0",
     "antd": "^5.26.6",
     "axios": "^1.10.0",
