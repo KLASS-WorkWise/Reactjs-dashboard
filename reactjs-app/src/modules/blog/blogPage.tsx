@@ -1,3 +1,5 @@
+"use client";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Modal } from "antd";
 import { useQueryClient } from "@tanstack/react-query";
@@ -5,6 +7,7 @@ import { useState } from "react";
 import { useAppMessage } from "../../stores/useAppMessage";
 import BlogTable from "./blogTable";
 import BlogForm from "./blogForm";
+import BlogPreviewModal from "./BlogPreviewModel";
 import type {
   BlogType,
   CreateBlogRequest,
@@ -26,6 +29,8 @@ const BlogPage = () => {
   const [editingBlog, setEditingBlog] = useState<BlogType | undefined>(
     undefined
   );
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false);
+  const [previewBlog, setPreviewBlog] = useState<BlogType | null>(null);
 
   const msgSuccess = (msg: string) => {
     sendMessage({
@@ -93,7 +98,7 @@ const BlogPage = () => {
       queryClient.invalidateQueries({ queryKey: ["blogs"] });
       setIsModalOpen(false);
       setEditingBlog(undefined);
-      msgSuccess("Cập nhật blog thành công!");
+msgSuccess("Cập nhật blog thành công!");
     },
     onError: (error: unknown) => {
       console.error("Update blog error:", error);
@@ -157,6 +162,16 @@ const BlogPage = () => {
     setEditingBlog(undefined);
   };
 
+  const handlePreview = (blog: BlogType) => {
+    setPreviewBlog(blog);
+    setIsPreviewModalOpen(true);
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewModalOpen(false);
+    setPreviewBlog(null);
+  };
+
   return (
     <div>
       <BlogTable
@@ -164,6 +179,7 @@ const BlogPage = () => {
         loading={queryBlogs.isLoading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onPreview={handlePreview}
         onAddClick={handleAddClick}
       />
 
@@ -185,6 +201,12 @@ const BlogPage = () => {
           loading={createBlogMutation.isPending || updateBlogMutation.isPending}
         />
       </Modal>
+
+      <BlogPreviewModal
+        visible={isPreviewModalOpen}
+        blog={previewBlog}
+        onClose={handleClosePreview}
+      />
     </div>
   );
 };

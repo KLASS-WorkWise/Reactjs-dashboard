@@ -8,7 +8,8 @@ const firebaseConfig = {
   projectId: "work-wise-1fc2e",
   storageBucket: "work-wise-1fc2e.firebasestorage.app",
   messagingSenderId: "954190400565",
-  appId: "1:954190400565:web:321d47c4680c20b981357c"
+  appId: "1:954190400565:web:321d47c4680c20b981357c",
+  measurementId: "G-4X4DZRS23F"
 };
 
 let firebaseApp: FirebaseApp;
