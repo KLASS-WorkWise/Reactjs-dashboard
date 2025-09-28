@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { applicantService } from "../../services/applicant.service";
@@ -63,7 +63,7 @@ export default function EmployerJobsPage() {
       // build counts
       const counts: Record<number, number> = {};
       const newCounts: Record<number, number> = {};
-      (res.data.content || []).forEach((job : any) => {
+      (res.data.content || []).forEach((job : JobPosting) => {
         counts[job.id] = job.applicantsCount ?? 0;
         newCounts[job.id] = job.newApplicantsCount ?? 0;
       });

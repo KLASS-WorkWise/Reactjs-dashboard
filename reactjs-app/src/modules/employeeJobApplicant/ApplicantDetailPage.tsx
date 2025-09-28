@@ -1,7 +1,7 @@
 import  { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { applicantService } from "../../services/applicant.service";
-import type { ApplicantHistory, ApplicantTracking } from "../../types/employerJobAplicant.type";
+import type {  ApplicantTracking, TimelineEvents } from "../../types/employerJobAplicant.type";
 import styles from "../../styles/ApplicantDetailPage.module.css";
 import {  ArrowLeftIcon} from "lucide-react";
 
@@ -42,7 +42,7 @@ export default function ApplicantDetailPage() {
   if (!tracking || !tracking.detail) return <p>No candidates found.</p>;
 
   const applicant = tracking.detail;
-  const history: ApplicantHistory[] = tracking.history || [];
+  // const history: ApplicantHistory[] = tracking.history || [];
   const currentStatus = applicant.applicationStatus;
 
   return (
@@ -81,9 +81,63 @@ export default function ApplicantDetailPage() {
             {/* <p className={styles.applicantInfo}><strong>Job description:</strong> {applicant.description}</p> */}
           </div>
         </div>
+    {/* Right Column: Timeline */}
+<div className={styles.applicantRight}>
+  <div className={styles.timeline}>
+    <h2>Timeline</h2>
+    {tracking.timeline.length === 0 ? (
+      <p className={styles.applicantInfo}>No timeline yet.</p>
+    ) : (
+      <ul className={styles.timelineList}>
+        {tracking.timeline.map((step, stepIndex) => {
+          // Xác định step có completed/current
+          let stepClass = styles.timelineItemPending;
+          if (step.currentStep) stepClass = styles.timelineItemCurrent;
+          else if (step.completed) stepClass = styles.timelineItemCompleted;
+
+          return (
+            <li key={stepIndex} className={`${styles.timelineItem} ${stepClass}`}>
+              <div className={styles.timelineItemCircle}>
+                {step.completed ? "✓" : stepIndex + 1}
+              </div>
+              {/* <p className={styles.timelineStatus}>{step.status}</p> */}
+
+              {/* Danh sách event trong step */}
+              <ul className={styles.timelineSubList}>
+                {step.events.map((event: TimelineEvents, i: number) => {
+                  const isInterview = "scheduledAt" in event; // phân biệt interview
+
+                  return (
+                    <li key={i} className={styles.timelineSubItem}>
+                      {isInterview ? (
+                        <>
+                          <p><strong>Interview:</strong> {new Date(event.scheduledAt).toLocaleString()}</p>
+                          <p><strong>Location:</strong> {event.location}</p>
+                          <p><strong>Interviewer:</strong> {event.interviewer}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className={styles.timelineStatus}>{event.status}</p>
+                          {event.note && <p className={styles.timelineNote}>{event.note}</p>}
+                          <p className={styles.timelineMeta}>
+                            {new Date(event.changedAt).toLocaleString()} - {event.changedBy}
+                          </p>
+                        </>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </li>
+          );
+        })}
+      </ul>
+    )}
+  </div>
+</div>
 
         {/* Right Column: Timeline */}
-        <div className={styles.applicantRight}>
+        {/* <div className={styles.applicantRight}>
           <div className={styles.timeline}>
             <h2>History</h2>
             {history.length === 0 ? (
@@ -117,7 +171,7 @@ export default function ApplicantDetailPage() {
 
             )}
           </div>
-        </div>
+        </div> */}
       </div>
     </div>
   );

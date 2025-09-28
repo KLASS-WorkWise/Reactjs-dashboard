@@ -99,6 +99,12 @@ export type ApplicantDetail = {
   history: ApplicantHistory[];
 };
 
+export type InterviewSchedule = {
+  id: number;
+  scheduledAt: string;
+  location: string;
+  interviewer: string;
+};
 export interface TimelineEvent {
   stepOrder: number;
   status: string;
@@ -107,7 +113,15 @@ export interface TimelineEvent {
   completed: boolean;
 }
 
+export type TimelineEvents = ApplicantHistory | InterviewSchedule;
 
+export type ApplicantTimeline = {
+  stepOrder: number;
+  status: string;
+  events: TimelineEvents[];
+  currentStep: boolean;
+  completed: boolean;
+};
 export interface ApplicantTracking {
   detail: ApplicantResponse;
   history: ApplicantHistory[];
