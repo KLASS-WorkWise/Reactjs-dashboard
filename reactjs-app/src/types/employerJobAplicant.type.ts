@@ -15,7 +15,6 @@ export interface PaginatedEmployeeListJobResponseDto<T> {
 }
 
 export type JobPosting = {
-  data: any;
   id: number;
   employerId: number;
   employerName: string;

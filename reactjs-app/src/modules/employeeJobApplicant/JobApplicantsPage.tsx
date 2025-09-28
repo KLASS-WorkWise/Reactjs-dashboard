@@ -5,17 +5,16 @@ import { applicantService } from "../../services/applicant.service";
 import type { ApplicantResponse } from "../../types/employerJobAplicant.type";
 import styles from "../../styles/JobApplicantsPage.module.css"; // đổi import
 import { ArrowLeftIcon, SaveIcon } from "lucide-react";
+import { ApplicationStatus } from "./ApplicantDetailPage";
 
-export const ApplicationStatus = {
-  CV_REVIEW: "CV_REVIEW",
-  INTERVIEW: "INTERVIEW",
-  OFFER: "OFFER",
-  HIRED: "HIRED",
-  REJECTED: "REJECTED",
-} as const;
-
-export type ApplicationStatus =
-  (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
+const statusFlow: Record<ApplicationStatus, ApplicationStatus[]> = {
+  PENDING: ["CV_REVIEW"],
+  CV_REVIEW: ["INTERVIEW", "REJECTED"],
+  INTERVIEW: ["OFFER", "REJECTED"],
+  OFFER: ["HIRED", "REJECTED"],
+  HIRED: [],
+  REJECTED: [],
+};
 
 function ApplicantRow({
   applicant,
@@ -41,6 +40,10 @@ function ApplicantRow({
   const [location, setLocation] = useState("");
   const [interviewer, setInterviewer] = useState("");
 
+  const allowedNextStatus = statusFlow[applicant.applicationStatus as ApplicationStatus];
+
+  const isUpdateDisabled = applicant.applicationStatus === "HIRED" || applicant.applicationStatus === "REJECTED";
+
   return (
     <tr>
       <td>{applicant.fullName}</td>
@@ -62,17 +65,17 @@ function ApplicantRow({
             className={styles.statusSelect}
             value={status}
             onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
+            disabled={isUpdateDisabled}
           >
             <option value="">-- Select Status --</option>
-            {Object.values(ApplicationStatus).map((s) => (
+            {allowedNextStatus.map((s) => (
               <option key={s} value={s}>
                 {s}
               </option>
             ))}
           </select>
 
-          {/* nếu status = INTERVIEW thì hiện thêm form */}
-          {status === ApplicationStatus.INTERVIEW && (
+          {status === "INTERVIEW" && (
             <div className={styles.interviewForm}>
               <input
                 type="datetime-local"
@@ -93,16 +96,9 @@ function ApplicantRow({
                 onChange={(e) => setInterviewer(e.target.value)}
                 className={styles.noteInput}
               />
-              {/* <input
-                type="text"
-                value={interviewer}
-                onChange={(e) => setInterviewer(e.target.value)}
-                className={styles.input}
-                placeholder="Interviewer name"
-              /> */}
             </div>
           )}
-          {/* note chung */}
+
           <textarea
             placeholder="Notes for candidates..."
             value={note}
@@ -122,6 +118,7 @@ function ApplicantRow({
                 interviewer || undefined
               )
             }
+            disabled={isUpdateDisabled || !status}
           >
             <div style={{ display: "flex", justifyContent: "center" }}>
               <SaveIcon size={32} />
