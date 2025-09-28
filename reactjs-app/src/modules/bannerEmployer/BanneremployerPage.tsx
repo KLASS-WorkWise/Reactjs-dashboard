@@ -72,7 +72,7 @@ const BannerEmployerPage = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Tiêu đề", dataIndex: "bannerTitle", key: "bannerTitle" },
+    { title: "Loại banner", dataIndex: "bannerType", key: "bannerType" },
     { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
     { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
     {

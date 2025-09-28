@@ -1,11 +1,11 @@
 import { Modal, Form, Input, Button, DatePicker, Select, Upload, message } from "antd";
 import { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
-const { RangePicker } = DatePicker;
-
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { createBanner } from "../banneremployer.service";
 import { useAuthStore } from "../../../stores/useAuthorStore";
+
+const { RangePicker } = DatePicker;
 
 interface AddBannerProps {
   visible: boolean;
@@ -18,78 +18,18 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
   const [imageUrl, setImageUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [bannerType, setBannerType] = useState<string>("");
-  const [sizeHint, setSizeHint] = useState<string>("");
+  const [bannerType, setBannerType] = useState<string>("Vip");
+  const [sizeHint, setSizeHint] = useState<string>(
+    "Ảnh Vip: chiều ngang ≤ 600px, chiều dọc ≤ 380px"
+  );
+  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
 
-  const handleUpload = async (options: UploadRequestOption) => {
-    const { file: uploadFile, onSuccess, onError } = options;
-    try {
-      const img = new window.Image();
-      img.src = URL.createObjectURL(uploadFile as File);
-      img.onload = () => {
-        let valid = false;
-        let errMsg = "";
-        if (bannerType === "Vip") {
-          valid = img.width <= 600 && img.height <= 380;
-          if (!valid) errMsg = `Ảnh Vip phải có chiều ngang ≤ 600px và chiều dọc ≤ 380px. Ảnh bạn chọn: ${img.width}x${img.height}`;
-        } else if (bannerType === "Featured") {
-          valid = img.width <= 1100 && img.height <= 105;
-          if (!valid) errMsg = `Ảnh Featured phải có chiều ngang ≤ 1100px và chiều dọc ≤ 105px. Ảnh bạn chọn: ${img.width}x${img.height}`;
-        } else if (bannerType === "Standard") {
-          valid = img.width <= 900 && img.height <= 900;
-          if (!valid) errMsg = `Ảnh Standard phải có chiều ngang ≤ 900px và chiều dọc ≤ 900px. Ảnh bạn chọn: ${img.width}x${img.height}`;
-        } else {
-          valid = true;
-        }
-        if (!valid) {
-          message.error(errMsg);
-          if (onError) onError(new Error(errMsg));
-          return;
-        }
-        setFile(uploadFile as File);
-        setImageUrl(img.src);
-        message.success("Chọn ảnh thành công!");
-        if (onSuccess) onSuccess(img.src, {} as any);
-      };
-      img.onerror = () => {
-        message.error("Không đọc được ảnh!");
-        if (onError) onError(new Error("Không đọc được ảnh!"));
-      };
-    } catch (err) {
-      message.error("Chọn ảnh thất bại!");
-      if (onError) onError(err as any);
-    }
-  };
-
-  const handleFinish = async (values: any) => {
-    setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append("companyName", values.companyName);
-      formData.append("companyEmail", values.companyEmail);
-      formData.append("companyPhone", values.companyPhone);
-      formData.append("companyWebsite", values.companyWebsite || "");
-      formData.append("bannerTitle", values.bannerTitle);
-      formData.append("bannerType", values.bannerType);
-      formData.append("startDate", values.dateRange[0].format("YYYY-MM-DD"));
-      formData.append("endDate", values.dateRange[1].format("YYYY-MM-DD"));
-      formData.append("description", values.description || "");
-      if (file) formData.append("bannerImage", file);
-
-      // Lấy access_token từ store
-      const { access_token } = useAuthStore.getState();
-      await createBanner(formData, access_token ?? "");
-
-      message.success("Tạo banner thành công!");
-      onClose();
-      form.resetFields();
-      setImageUrl("");
-      setFile(null);
-    } catch {
-      message.error("Tạo banner thất bại!");
-    }
-    setLoading(false);
-  };
+  // Config message
+  message.config({
+    top: 60,
+    duration: 3,
+    maxCount: 2,
+  });
 
   // Thông báo kích thước động
   const getSizeHint = (type: string) => {
@@ -99,48 +39,177 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
     return "";
   };
 
+  const handleUpload = async (options: UploadRequestOption) => {
+    const { file: uploadFile, onSuccess, onError } = options;
+    try {
+      const img = new window.Image();
+      img.src = URL.createObjectURL(uploadFile as File);
+      img.onload = () => {
+        setImageSize({ width: img.width, height: img.height });
+        let valid = false;
+        let errMsg = "";
+
+        if (bannerType === "Vip") {
+          valid = img.width <= 600 && img.height <= 380;
+          if (!valid)
+            errMsg = `Ảnh Vip phải ≤ 600x380. Ảnh bạn chọn: ${img.width}x${img.height}`;
+        } else if (bannerType === "Featured") {
+          valid = img.width <= 1100 && img.height <= 105;
+          if (!valid)
+            errMsg = `Ảnh Featured phải ≤ 1100x105. Ảnh bạn chọn: ${img.width}x${img.height}`;
+        } else if (bannerType === "Standard") {
+          valid = img.width <= 900 && img.height <= 900;
+          if (!valid)
+            errMsg = `Ảnh Standard phải ≤ 900x900. Ảnh bạn chọn: ${img.width}x${img.height}`;
+        } else {
+          valid = true;
+        }
+
+        if (!valid) {
+          message.error(errMsg);
+          onError?.(new Error(errMsg));
+          setFile(null);
+          setImageUrl("");
+          return;
+        }
+
+        setFile(uploadFile as File);
+        setImageUrl(img.src);
+        message.success("Chọn ảnh thành công!");
+        onSuccess?.(img.src, {} as any);
+      };
+      img.onerror = () => {
+        message.error("Không đọc được ảnh!");
+        onError?.(new Error("Không đọc được ảnh!"));
+      };
+    } catch (err) {
+      message.error("Chọn ảnh thất bại!");
+      onError?.(err as any);
+    }
+  };
+
+  const handleFinish = async (values: any) => {
+    if (!file) {
+      message.error("Vui lòng chọn ảnh banner/logo!");
+      return;
+    }
+
+    if (imageSize) {
+      let valid = false;
+      let errMsg = "";
+
+      if (bannerType === "Vip") {
+        valid = imageSize.width <= 600 && imageSize.height <= 380;
+        if (!valid)
+          errMsg = `Ảnh Vip phải ≤ 600x380. Ảnh bạn chọn: ${imageSize.width}x${imageSize.height}`;
+      } else if (bannerType === "Featured") {
+        valid = imageSize.width <= 1100 && imageSize.height <= 105;
+        if (!valid)
+          errMsg = `Ảnh Featured phải ≤ 1100x105. Ảnh bạn chọn: ${imageSize.width}x${imageSize.height}`;
+      } else if (bannerType === "Standard") {
+        valid = imageSize.width <= 900 && imageSize.height <= 900;
+        if (!valid)
+          errMsg = `Ảnh Standard phải ≤ 900x900. Ảnh bạn chọn: ${imageSize.width}x${imageSize.height}`;
+      } else {
+        valid = true;
+      }
+
+      if (!valid) {
+        message.error(errMsg);
+        return;
+      }
+    }
+
+    setLoading(true);
+    try {
+      const formData = new FormData();
+      formData.append("companyName", values.companyName);
+      formData.append("companyEmail", values.companyEmail);
+      formData.append("companyPhone", values.companyPhone);
+      formData.append("bannerType", values.bannerType);
+      formData.append("startDate", values.dateRange[0].format("YYYY-MM-DD"));
+      formData.append("endDate", values.dateRange[1].format("YYYY-MM-DD"));
+      formData.append("description", values.description || "");
+      if (file) formData.append("bannerImage", file);
+
+      const { access_token } = useAuthStore.getState();
+      await createBanner(formData, access_token ?? "");
+      message.success("Tạo banner thành công!");
+      onClose();
+      form.resetFields();
+      setImageUrl("");
+      setFile(null);
+      setImageSize(null);
+      setBannerType("Vip");
+      setSizeHint(getSizeHint("Vip"));
+    } catch (err: any) {
+      let errorMsg = "Tạo banner thất bại!";
+      if (err?.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      window.alert(errorMsg);
+    }
+    setLoading(false);
+  };
+
   return (
-    <Modal open={visible} onCancel={onClose} footer={null} title="Tạo banner mới" width={600}>
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+    <Modal open={visible} onCancel={onClose} footer={null} title="Tạo banner mới" width={600} centered>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={handleFinish}
+        initialValues={{ bannerType: "Vip" }}
+      >
         <Form.Item name="companyName" label="Tên công ty" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
+
         <Form.Item name="companyEmail" label="Email công ty" rules={[{ required: true, type: "email" }]}>
           <Input />
         </Form.Item>
+
         <Form.Item name="companyPhone" label="Số điện thoại công ty" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
-        <Form.Item name="companyWebsite" label="Website công ty">
-          <Input />
-        </Form.Item>
-        <Form.Item name="bannerTitle" label="Tiêu đề banner" rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
-<Form.Item 
-  name="bannerType" 
-  label="Loại banner" 
-  rules={[{ required: true, message: "Vui lòng chọn loại banner!" }]}
->
-  <Select
-    onChange={v => {
-      setBannerType(v);
-      setSizeHint(getSizeHint(v));
-      form.setFieldsValue({ bannerType: v }); // 🔥 update form value
-    }}
-  >
-    <Select.Option value="Vip">Vip</Select.Option>
-    <Select.Option value="Featured">Featured</Select.Option>
-    <Select.Option value="Standard">Standard</Select.Option>
-  </Select>
-  {sizeHint && <div style={{ color: "#faad14", marginTop: 4 }}>{sizeHint}</div>}
-</Form.Item>
 
-        <Form.Item name="dateRange" label="Thời gian thuê" rules={[{ required: true }]}>
-          <RangePicker showTime />
+        <Form.Item
+          name="bannerType"
+          label="Loại banner"
+          rules={[{ required: true, message: "Vui lòng chọn loại banner!" }]}
+        >
+          <Select
+            value={bannerType}
+            onChange={(v) => {
+              setBannerType(v);
+              setSizeHint(getSizeHint(v));
+              form.setFieldsValue({ bannerType: v });
+            }}
+          >
+            <Select.Option value="Vip">Vip</Select.Option>
+            <Select.Option value="Featured">Featured</Select.Option>
+            <Select.Option value="Standard">Standard</Select.Option>
+          </Select>
+          {sizeHint && <div style={{ color: "#faad14", marginTop: 4 }}>{sizeHint}</div>}
         </Form.Item>
-        <Form.Item label="Ảnh banner/logo">
-          <Upload name="file" customRequest={handleUpload} showUploadList={false} accept="image/*">
+
+        <Form.Item
+          name="dateRange"
+          label="Thời gian thuê"
+          rules={[{ required: true }]}
+        >
+          <RangePicker
+            showTime
+            disabledDate={(current) => current && current.isBefore(new Date(), "day")}
+          />
+        </Form.Item>
+
+        <Form.Item label="Ảnh banner/logo" required>
+          <Upload
+            name="file"
+            customRequest={handleUpload}
+            showUploadList={false}
+            accept="image/*"
+          >
             <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
           </Upload>
           {imageUrl && (
@@ -154,6 +223,7 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
             </div>
           )}
         </Form.Item>
+
         <Form.Item style={{ marginTop: 16 }}>
           <Button type="primary" htmlType="submit" loading={loading} block>
             Tạo banner
