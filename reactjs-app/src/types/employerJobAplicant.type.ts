@@ -1,3 +1,19 @@
+export interface ApiResponse<T> {
+status: "success" | "error";   // "success" | "error"
+  message?: string;
+  data: T;
+}
+
+export interface PaginatedEmployeeListJobResponseDto<T> {
+  content: T[];        // danh sách job
+  pageNumber: number;        // ⚠️ từ BE trả về 0-based
+  pageSize: number;          // số record mỗi trang
+  totalRecords: number;      // tổng số record
+  totalPages: number;        // tổng số trang
+  hasNext: boolean;
+  hasPrevious: boolean;
+}
+
 export type JobPosting = {
   id: number;
   employerId: number;
@@ -14,16 +30,18 @@ export type JobPosting = {
   endAt: string;
   status: string;
   createdAt: string;
+  applicantsCount: number;
+   newApplicantsCount: number;
 };
-export type PaginatedEmployeeListJobResponseDto = {
-  data: JobPosting[];
-   pageNumber: number;
-   pageSize: number;
-    totalRecords: number;
-    totalPages: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
-};
+// export type PaginatedEmployeeListJobResponseDto = {
+//   data: JobPosting[];
+//    pageNumber: number;
+//    pageSize: number;
+//     totalRecords: number;
+//     totalPages: number;
+//     hasNext: boolean;
+//     hasPrevious: boolean;
+// };
 export type Applicant = {
   id: number;
   fullName: string;
@@ -32,7 +50,10 @@ export type Applicant = {
   skillMatchPercent: number;
 };
 
-
+export type ApplicantsWithStatsDto = {
+    applicants: ApplicantResponse[];  // danh sách ứng viên
+    stats: Record<string, number>;                // thống kê theo trạng thái
+}
 export type ApplicantResponse = {
   id: number;
   jobId: number;
@@ -80,6 +101,12 @@ export type ApplicantDetail = {
   history: ApplicantHistory[];
 };
 
+export type InterviewSchedule = {
+  id: number;
+  scheduledAt: string;
+  location: string;
+  interviewer: string;
+};
 export interface TimelineEvent {
   stepOrder: number;
   status: string;
@@ -88,14 +115,15 @@ export interface TimelineEvent {
   completed: boolean;
 }
 
-export type ApiResponse<T> = {
-  statusCode: number;
-  error: string | null;
-  message: string | string[] | null;
-  data: T;
+export type TimelineEvents = ApplicantHistory | InterviewSchedule;
+
+export type ApplicantTimeline = {
+  stepOrder: number;
+  status: string;
+  events: TimelineEvents[];
+  currentStep: boolean;
+  completed: boolean;
 };
-
-
 export interface ApplicantTracking {
   detail: ApplicantResponse;
   history: ApplicantHistory[];

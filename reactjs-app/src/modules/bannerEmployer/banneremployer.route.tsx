@@ -5,7 +5,7 @@ import BannerEmployerPage from "./BanneremployerPage";
 export const routesBannerEmployer: RouteItem[] = [
 	{
 		path: "/banneremployer",
-		label: <span style={{ fontSize: 18, fontWeight: "bold" }}>Banner công ty</span>,
+		label: <span style={{ fontSize: 18, fontWeight: "bold" }}>Advertising rental</span>,
 		key: "banneremployer",
 		icon: <PictureOutlined style={{ fontSize: 22, color: "#66789c" }} />,
 		element: <BannerEmployerPage />,

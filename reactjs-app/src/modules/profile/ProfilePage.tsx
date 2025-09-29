@@ -29,11 +29,11 @@ const ProfilePage: React.FC = () => {
       return await updateUser(id, payload);
     },
     onSuccess: () => {
-      toast.success("✅ Cập nhật thông tin thành công!");
+      toast.success("Update information successfully!");
       queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     },
     onError: () => {
-      toast.error("❌ Cập nhật thất bại!");
+      toast.error("❌ Update failed!");
     },
   });
 
@@ -67,7 +67,7 @@ const ProfilePage: React.FC = () => {
             style={{ background: "#1890ff" }}
           />
           <Typography.Title level={4} style={{ marginTop: 12, marginBottom: 0 }}>
-            Thông tin cá nhân
+            Personal Information
           </Typography.Title>
         </div>
         <Form
@@ -92,21 +92,21 @@ const ProfilePage: React.FC = () => {
           <Form.Item
             name="username"
             label="Username"
-            rules={[{ required: true, message: "Nhập username!" }]}
+            rules={[{ required: true, message: "Enter username!" }]}
           >
             <Input placeholder="Username" />
           </Form.Item>
           <Form.Item
             name="fullName"
-            label="Họ tên"
-            rules={[{ required: true, message: "Nhập họ tên!" }]}
+            label="Full Name"
+            rules={[{ required: true, message: "Enter full name!" }]}
           >
-            <Input placeholder="Họ tên" />
+            <Input placeholder="Full Name" />
           </Form.Item>
           <Form.Item
             name="email"
             label="Email"
-            rules={[{ required: true, type: "email", message: "Nhập email hợp lệ!" }]}
+            rules={[{ required: true, type: "email", message: "Enter a valid email!" }]}
           >
             <Input placeholder="Email" disabled />
           </Form.Item>
@@ -118,7 +118,7 @@ const ProfilePage: React.FC = () => {
               loading={mutation.isPending}
               style={{ fontWeight: 600, borderRadius: 10 }}
             >
-              Cập nhật thông tin
+              Update Information
             </Button>
           </Form.Item>
         </Form>

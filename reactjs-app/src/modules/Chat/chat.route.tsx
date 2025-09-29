@@ -1,4 +1,4 @@
-import { DatabaseOutlined, MessageOutlined, } from "@ant-design/icons";
+import {  MessageOutlined, } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
 import ChatPage from "./ChatPage";
 

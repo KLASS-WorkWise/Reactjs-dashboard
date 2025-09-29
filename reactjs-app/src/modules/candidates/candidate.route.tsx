@@ -1,16 +1,16 @@
 import { DatabaseOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
-import CandidatesApplyPage from "../candidatesApply/CadidatesApplyPage";
+import CompanyPage from "../companyInformation/CompanyPage";
 
 
 
 export const routesCandidate: RouteItem[] = [
     {
         path: '/candidate',
-        label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Candidates</span>,
+        label: <span style={{ fontSize: 18, fontWeight: 'bold' }}>Company Information</span>,
         key: 'candidate',
         icon: <DatabaseOutlined style={{ fontSize: 21, color: '#66789c' }} />,
-        element: <CandidatesApplyPage />,
+        element: <CompanyPage />,
         isShowMenu: true,
         isPrivate: true,
         roles : ["Employers"], // hoặc ["Employers"]

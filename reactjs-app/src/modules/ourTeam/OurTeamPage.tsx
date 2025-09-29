@@ -69,7 +69,7 @@ const OurTeamPage = () => {
         />
       ) : (
         <OurTeamTable
-          ourTeams={ourTeams || []}
+          ourTeams={ourTeams ? (Array.isArray(ourTeams) ? ourTeams : ourTeams.data) : []}
           onEdit={handleEdit}
           onDelete={handleDelete}
           loading={isLoading}

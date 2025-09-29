@@ -11,7 +11,15 @@ const EmployerPage = () => {
     const queryEmployers = useQuery<EmployerListResponse>({
         queryKey: ["employers", currentPage],
         queryFn: async () => fetchEmployers(currentPage - 1), // BE page bắt đầu từ 0
-        keepPreviousData: true,
+                placeholderData: {
+                    data: [],
+                    pageNumber: 0,
+                    pageSize: 10,
+                    totalRecords: 0,
+                    totalPages: 0,
+                    hasNext: false,
+                    hasPrevious: false,
+                },
     });
 
     const columns: TableProps<EmployerType>['columns'] = [
@@ -45,7 +53,7 @@ const EmployerPage = () => {
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             render: (phoneNumber: string | null) =>
-                phoneNumber ? phoneNumber : <span style={{ color: '#999' }}>Chưa được cập nhật</span>,
+                phoneNumber ? phoneNumber : <span style={{ color: '#999' }}>Not Updated Yet</span>,
         },
         {
             title: 'Avatar',
@@ -55,7 +63,7 @@ const EmployerPage = () => {
                 avatar ? (
                     <img src={avatar} alt="avatar" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                 ) : (
-                    <span style={{ color: '#999' }}>Chưa được cập nhật</span>
+                    <span style={{ color: '#999' }}>Not Updated Yet</span>
                 ),
         },
     ];

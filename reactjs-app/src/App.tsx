@@ -80,7 +80,7 @@ function App() {
       </BrowserRouter>
       {/* The rest of your application */}
       <ReactQueryDevtools initialIsOpen={false} />
-            <Toaster position="top-center" />
+<Toaster position="top-center" />
 
     </QueryClientProvider>
   );

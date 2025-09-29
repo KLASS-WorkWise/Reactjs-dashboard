@@ -1,15 +1,13 @@
 import React from 'react'
 
-import type { FormProps } from 'antd';
 import type { UserType } from '../user.type';
-import { Card, Form, Input, Modal, Select, Spin, Table, type FormInstance } from 'antd';
+import { Card , Spin, Table } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 
 interface UserTableProps {
     data?: UserType[];
     loading: boolean;
     columns: ColumnsType<UserType>;
-    onAddClick: () => void;
 }
 
 
@@ -17,7 +15,6 @@ const UserTable: React.FC<UserTableProps> = ({
     data,
     loading,
     columns,
-    onAddClick,
 }) => {
     return (
         <Card

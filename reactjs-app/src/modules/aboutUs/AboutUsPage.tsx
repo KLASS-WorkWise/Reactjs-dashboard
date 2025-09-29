@@ -18,7 +18,10 @@ const AboutUsPage: React.FC = () => {
     refetch,
   } = useQuery({
     queryKey: ["aboutUs"],
-    queryFn: aboutUsService.getAllAboutUs,
+    queryFn: async () => {
+      const res = await aboutUsService.getAllAboutUs();
+      return res.data;
+    },
   });
 
   const showModal = () => {

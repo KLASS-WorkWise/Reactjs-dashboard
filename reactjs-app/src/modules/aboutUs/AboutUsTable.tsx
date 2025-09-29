@@ -5,7 +5,7 @@ import aboutUsService from "./aboutUs.service";
 import type { AboutUs } from "./aboutUs.type";
 
 interface AboutUsTableProps {
-  data: AboutUs[] | undefined;
+  data: AboutUs[];
   loading: boolean;
   onEdit: (aboutUs: AboutUs) => void;
 }
