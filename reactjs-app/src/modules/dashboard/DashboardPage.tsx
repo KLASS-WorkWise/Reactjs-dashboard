@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import axios from "axios";
 import { Line, Column, Pie } from "@ant-design/plots";
 import { Card, Row, Col, Typography } from "antd";
@@ -19,7 +19,10 @@ const DashboardPage = () => {
   const [chartData, setChartData] = useState({
     userGrowth: [],
     jobPosting: [],
-    conversion: 0,
+    applicationStats: {
+      applyRate: 0,
+      totalApplications: 0,
+    },
   });
 
   // Hàm chuẩn hóa dữ liệu chỉ hiển thị đến tháng hiện tại
@@ -68,11 +71,10 @@ const DashboardPage = () => {
     const year = new Date().getFullYear();
     axios.get(`http://localhost:8080/api/statistics/chart-data?year=${year}`)
       .then(res => {
-        console.log("chart-data raw:", res.data); // debug
         setChartData({
           userGrowth: res.data.userGrowth || [],
           jobPosting: res.data.jobPosting || [],
-          conversion: res.data.conversion || 0,
+          applicationStats: res.data.applicationStats || { applyRate: 0, totalApplications: 0 },
         });
       })
       .catch(err => console.error("Error fetching chart-data:", err));
@@ -92,11 +94,12 @@ const DashboardPage = () => {
     { month: "Dec", value: 370 },
   ];
 
-  // Conversion Rate lấy từ API thay vì hard-code
-  const conversionRate = Math.round(chartData.conversion); // làm tròn nếu cần
-  const conversionData = [
-    { type: "Converted", value: conversionRate },
-    { type: "Not Converted", value: 100 - conversionRate },
+  // Apply Rate & Total Applications từ API mới
+  const applyRate = Math.round((chartData.applicationStats.applyRate || 0) * 100); // chuyển sang %
+  const totalApplications = chartData.applicationStats.totalApplications || 0;
+  const applyPieData = [
+    { type: "Applied", value: applyRate },
+    { type: "Not Applied", value: 100 - applyRate },
   ];
 
   // Config charts 
@@ -123,8 +126,8 @@ const DashboardPage = () => {
     color: "#48C9B0",
     height: 200,
   };
-  const conversionConfig = {
-    data: conversionData,
+  const applyPieConfig = {
+    data: applyPieData,
     angleField: "value",
     colorField: "type",
     radius: 1,
@@ -171,7 +174,6 @@ const DashboardPage = () => {
         <Col xs={24} md={12}>
           <Card>
             <Title level={4}>User Growth</Title>
-            <Title level={2}>8,140</Title>
             <Text type="secondary">New Users</Text>
             <Line {...userGrowthConfig} />
           </Card>
@@ -181,19 +183,18 @@ const DashboardPage = () => {
         <Col xs={24} md={12}>
           <Card>
             <Title level={4}>Job Postings</Title>
-            <Title level={2}>1,850</Title>
             <Text type="secondary">New Job Postings</Text>
             <Column {...jobPostingConfig} />
           </Card>
         </Col>
 
-        {/* Conversion Rate */}
+        {/* Thống kê ứng viên đã apply job posting */}
         <Col xs={24} md={12}>
           <Card>
-            <Title level={4}>Conversion Rate</Title>
-            <Title level={2}>{conversionRate}%</Title>
-            <Text type="secondary">Conversion Rate</Text>
-            <Pie {...conversionConfig} />
+            <Title level={4}>Candidates have applied for the Job</Title>
+            <Title level={2}>{totalApplications}</Title>
+            <Text type="secondary">Application Rate / Total Job Postings</Text>
+            <Pie {...applyPieConfig} />
           </Card>
         </Col>
 

@@ -1,6 +1,5 @@
 import { DatabaseOutlined } from "@ant-design/icons";
 import type { RouteItem } from "../../routes";
-import RecuiterPage from "./RecuiterPage";
 import CompanyPage from "../companys/CompanyPage";
 
 

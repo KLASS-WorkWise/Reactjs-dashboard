@@ -6,8 +6,6 @@ export interface BannerEmployer {
 	companyWebsite?: string;
 	bannerTitle: string;
 	bannerImage: string;
-	bannerLink?: string;
-	position: string;
 	bannerType?: string;
 	startDate: string;
 	endDate: string;

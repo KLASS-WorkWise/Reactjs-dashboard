@@ -28,10 +28,11 @@ const BannerEmployerPage = () => {
   const userId = useAuthStore((state) => state.loggedInUser?.id);
 
   useEffect(() => {
-    if (userId) fetchBanners();
+    if (typeof userId === "number") fetchBanners();
   }, [userId]);
 
   const fetchBanners = async () => {
+    if (typeof userId !== "number") return;
     setLoading(true);
     try {
       const data = await getBannersByUser(userId);
@@ -71,12 +72,11 @@ const BannerEmployerPage = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Tiêu đề", dataIndex: "bannerTitle", key: "bannerTitle" },
-    { title: "Vị trí", dataIndex: "position", key: "position" },
-    { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
-    { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
+    { title: "Banner Type", dataIndex: "bannerType", key: "bannerType" },
+    { title: "Start Date", dataIndex: "startDate", key: "startDate" },
+    { title: "End Date", dataIndex: "endDate", key: "endDate" },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status: BannerEmployer["status"]) => {
@@ -86,7 +86,7 @@ const BannerEmployerPage = () => {
       },
     },
     {
-      title: "Ảnh",
+      title: "Image",
       dataIndex: "bannerImage",
       key: "bannerImage",
       render: (url: string) =>
@@ -110,63 +110,53 @@ const BannerEmployerPage = () => {
           />
         ) : null,
     },
-    {
-      title: "Link",
-      dataIndex: "bannerLink",
-      key: "bannerLink",
-      render: (url: string) =>
-        url ? (
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            {url}
-          </a>
-        ) : null,
-    },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, record: BannerEmployer) => (
-        <Space>
-          <Button
-            size="small"
-            onClick={() => {
-              setEditBanner(record);
-              setEditVisible(true);
-            }}
-          >
-            Sửa
-          </Button>
+    // action 
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_: any, record: BannerEmployer) => (
+    //     <Space>
+    //       <Button
+    //         size="small"
+    //         onClick={() => {
+    //           setEditBanner(record);
+    //           setEditVisible(true);
+    //         }}
+    //       >
+    //         Sửa
+    //       </Button>
 
-          {/* Cảnh báo/gia hạn nếu còn dưới 7 ngày */}
-          {record.status === "ACTIVE" &&
-            dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
-              <Tag color="red">Sắp hết hạn</Tag>
-            )}
+    //       {/* Cảnh báo/gia hạn nếu còn dưới 7 ngày */}
+    //       {record.status === "ACTIVE" &&
+    //         dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
+    //           <Tag color="red">Sắp hết hạn</Tag>
+    //         )}
 
-          {record.status === "ACTIVE" &&
-            dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
-              <Button
-                type="dashed"
-                size="small"
-                onClick={() => handleRenew(record)}
-              >
-                Gia hạn
-              </Button>
-            )}
-        </Space>
-      ),
-    },
+    //       {record.status === "ACTIVE" &&
+    //         dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
+    //           <Button
+    //             type="dashed"
+    //             size="small"
+    //             onClick={() => handleRenew(record)}
+    //           >
+    //             Gia hạn
+    //           </Button>
+    //         )}
+    //     </Space>
+    //   ),
+    // },
   ];
 
   return (
     <Card style={{ margin: 24 }}>
-      <Typography.Title level={3}>Quản lý Banner công ty</Typography.Title>
+      <Typography.Title level={3}>Advertising rental management</Typography.Title>
 
       <Button
         type="primary"
         onClick={() => setAddVisible(true)}
         style={{ marginBottom: 16 }}
       >
-        Tạo banner mới
+        Create new banner
       </Button>
 
       <Table
@@ -184,7 +174,7 @@ const BannerEmployerPage = () => {
           setAddVisible(false);
           fetchBanners();
         }}
-        userId={userId}
+        userId={typeof userId === "number" ? userId : 0}
       />
 
       {/* Modal sửa */}
