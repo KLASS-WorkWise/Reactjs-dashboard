@@ -110,40 +110,41 @@ const BannerEmployerPage = () => {
           />
         ) : null,
     },
-    {
-      title: "Action",
-      key: "action",
-      render: (_: any, record: BannerEmployer) => (
-        <Space>
-          <Button
-            size="small"
-            onClick={() => {
-              setEditBanner(record);
-              setEditVisible(true);
-            }}
-          >
-            Sửa
-          </Button>
+    // action 
+    // {
+    //   title: "Action",
+    //   key: "action",
+    //   render: (_: any, record: BannerEmployer) => (
+    //     <Space>
+    //       <Button
+    //         size="small"
+    //         onClick={() => {
+    //           setEditBanner(record);
+    //           setEditVisible(true);
+    //         }}
+    //       >
+    //         Sửa
+    //       </Button>
 
-          {/* Cảnh báo/gia hạn nếu còn dưới 7 ngày */}
-          {record.status === "ACTIVE" &&
-            dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
-              <Tag color="red">Sắp hết hạn</Tag>
-            )}
+    //       {/* Cảnh báo/gia hạn nếu còn dưới 7 ngày */}
+    //       {record.status === "ACTIVE" &&
+    //         dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
+    //           <Tag color="red">Sắp hết hạn</Tag>
+    //         )}
 
-          {record.status === "ACTIVE" &&
-            dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
-              <Button
-                type="dashed"
-                size="small"
-                onClick={() => handleRenew(record)}
-              >
-                Gia hạn
-              </Button>
-            )}
-        </Space>
-      ),
-    },
+    //       {record.status === "ACTIVE" &&
+    //         dayjs(record.endDate).diff(dayjs(), "day") <= 7 && (
+    //           <Button
+    //             type="dashed"
+    //             size="small"
+    //             onClick={() => handleRenew(record)}
+    //           >
+    //             Gia hạn
+    //           </Button>
+    //         )}
+    //     </Space>
+    //   ),
+    // },
   ];
 
   return (
