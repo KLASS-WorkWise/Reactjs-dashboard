@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Button, Input, Spin, message } from "antd";
+import { Button, Input, Spin, message, Upload } from "antd";
 import {
-  MailOutlined,
+MailOutlined,
   PhoneOutlined,
   EnvironmentOutlined,
   GlobalOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import "./CompanyInformation.css";
+import { useAuthStore } from "../../../stores/useAuthorStore";
 
 interface CompanyInfo {
   companyName: string;
@@ -29,17 +30,32 @@ const CompanyInformationPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [edit, setEdit] = useState(false);
   const [form, setForm] = useState<Partial<CompanyInfo>>({});
+  const [bannerPreview, setBannerPreview] = useState<string | undefined>(undefined);
+  const [logoPreview, setLogoPreview] = useState<string | undefined>(undefined);
+  const [bannerFile, setBannerFile] = useState<File | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
 
-  // TODO: Replace with dynamic employerId from session/localStorage
-  const employerId = 5;
+  // Lấy id đăng nhập từ store
+  const loggedInUser = useAuthStore((state) => state.loggedInUser);
+  const employerId = loggedInUser?.id;
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (employerId) fetchData();
+    // eslint-disable-next-line
+  }, [employerId]);
+
+  useEffect(() => {
+    if (info) {
+      setBannerPreview(info.bannerUrl);
+      setLogoPreview(info.logoUrl);
+    }
+  }, [info]);
 
   const fetchData = async () => {
+    if (!employerId) return;
     setLoading(true);
     try {
+      // Lấy thông tin công ty theo id đăng nhập
       const res = await fetch(`http://localhost:8080/api/company/employer/${employerId}`);
       if (!res.ok) throw new Error("Không thể lấy thông tin công ty");
       const data = await res.json();
@@ -60,18 +76,44 @@ const CompanyInformationPage: React.FC = () => {
     setForm(prev => ({ ...prev, [field]: value }));
   };
 
+  // Chuyển file sang base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve(reader.result as string);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleSave = async () => {
     setLoading(true);
     try {
-      // API update company info (method/endpoint may need adjustment)
-      const res = await fetch(`http://localhost:8080/api/company/employer/${employerId}`, {
-        method: "PUT",
+      let bannerBase64 = form.bannerUrl;
+      let logoBase64 = form.logoUrl;
+
+      // Convert banner to base64 if changed
+      if (bannerFile) {
+        bannerBase64 = await fileToBase64(bannerFile);
+      }
+      // Convert logo to base64 if changed
+      if (logoFile) {
+        logoBase64 = await fileToBase64(logoFile);
+      }
+
+      // Gửi thông tin công ty (bao gồm base64 ảnh nếu có) bằng API mới
+      const res = await fetch(`http://localhost:8080/api/company/${employerId}/update-company-info`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, bannerUrl: bannerBase64, logoUrl: logoBase64 }),
       });
       if (!res.ok) throw new Error("Cập nhật thất bại");
       message.success("Cập nhật thành công");
       setEdit(false);
+      setBannerFile(null);
+      setLogoFile(null);
       fetchData();
     } catch (e: unknown) {
       if (e instanceof Error) {
@@ -89,23 +131,71 @@ const CompanyInformationPage: React.FC = () => {
   }
 
   if (!info) {
-    return <div className="company-info-empty">Không có thông tin công ty.</div>;
+    return <div className="company-info-empty">No company information</div>;
   }
 
   return (
     <div className="company-info-page-root">
       <div className="company-info-banner-wrap">
-        <img
-          src={info.bannerUrl || "/assets/static/default-banner.jpg"}
-          alt="Banner"
-          className="company-info-banner"
-        />
-        <div className="company-info-avatar-wrap">
+        {edit ? (
+          <div style={{ position: "relative" }}>
+            <Upload
+              showUploadList={false}
+              beforeUpload={file => {
+                setBannerFile(file);
+                setBannerPreview(URL.createObjectURL(file));
+                return false;
+              }}
+              accept="image/*"
+            >
+              <img
+                src={bannerPreview || "/assets/static/default-banner.jpg"}
+                alt="Banner"
+                className="company-info-banner"
+                style={{ cursor: "pointer", opacity: 0.9 }}
+                title="Chỉnh sửa banner"
+              />
+              <Button style={{ position: "absolute", right: 16, bottom: 16, zIndex: 2 }}>
+                Update banner
+              </Button>
+            </Upload>
+          </div>
+        ) : (
           <img
-            src={info.logoUrl || "/assets/static/default-avatar.png"}
-            alt="Logo"
-            className="company-info-avatar"
+            src={info.bannerUrl || "/assets/static/default-banner.jpg"}
+            alt="Banner"
+            className="company-info-banner"
           />
+        )}
+        <div className="company-info-avatar-wrap">
+          {edit ? (
+            <Upload
+              showUploadList={false}
+              beforeUpload={file => {
+                setLogoFile(file);
+                setLogoPreview(URL.createObjectURL(file));
+                return false;
+              }}
+              accept="image/*"
+            >
+              <img
+                src={logoPreview || "/assets/static/default-avatar.png"}
+                alt="Logo"
+                className="company-info-avatar"
+                style={{ cursor: "pointer", opacity: 0.95 }}
+                title="Chỉnh sửa logo"
+              />
+              <Button size="small" style={{ position: "absolute", left: 0, bottom: -36, zIndex: 2 }}>
+                Update logo
+              </Button>
+            </Upload>
+          ) : (
+            <img
+              src={info.logoUrl || "/assets/static/default-avatar.png"}
+              alt="Logo"
+              className="company-info-avatar"
+            />
+          )}
         </div>
       </div>
       <div className="company-info-content">
@@ -151,7 +241,7 @@ const CompanyInformationPage: React.FC = () => {
           </p>
           <p className="company-info-info-row">
             <EnvironmentOutlined className="company-info-icon" />
-            <span className="company-info-label">Địa chỉ:</span>
+            <span className="company-info-label">Address:</span>
             {edit ? (
               <Input
                 value={form.address}
@@ -185,7 +275,7 @@ const CompanyInformationPage: React.FC = () => {
             )}
           </p>
           <p className="company-info-info-row">
-            <span className="company-info-label">Ngành nghề:</span>
+            <span className="company-info-label">Industry:</span>
             {edit ? (
               <Input
                 value={form.industry}
@@ -199,7 +289,7 @@ const CompanyInformationPage: React.FC = () => {
           </p>
           <p className="company-info-info-row">
             <TeamOutlined className="company-info-icon" />
-            <span className="company-info-label">Quy mô:</span>
+            <span className="company-info-label">Employee Range:</span>
             {edit ? (
               <span style={{ display: "flex", alignItems: "center", gap: 4, marginLeft: 8 }}>
                 <Input
@@ -224,7 +314,7 @@ const CompanyInformationPage: React.FC = () => {
           </p>
         </div>
         <div className="company-info-desc-wrap">
-          <span className="company-info-desc-label">Mô tả:</span>
+          <span className="company-info-desc-label">Description:</span>
           {edit ? (
             <Input.TextArea
               value={form.description}
@@ -237,7 +327,7 @@ const CompanyInformationPage: React.FC = () => {
           )}
         </div>
         <div className="company-info-status-wrap">
-          <span className="company-info-status-label">Trạng thái:</span>
+          <span className="company-info-status-label">Status:</span>
           <span
             className={`company-info-status-badge ${
               info.status === "APPROVED"
@@ -253,11 +343,11 @@ const CompanyInformationPage: React.FC = () => {
         <div className="company-info-btn-group">
           {edit ? (
             <>
-              <Button onClick={() => setEdit(false)} className="company-info-btn-reject">Hủy</Button>
-              <Button type="primary" onClick={handleSave} className="company-info-btn-approve">Lưu</Button>
+              <Button onClick={() => setEdit(false)} className="company-info-btn-reject">Cancel</Button>
+              <Button type="primary" onClick={handleSave} className="company-info-btn-approve">Save</Button>
             </>
           ) : (
-            <Button type="primary" onClick={() => setEdit(true)} className="company-info-btn-approve">Chỉnh sửa</Button>
+            <Button type="primary" onClick={() => setEdit(true)} className="company-info-btn-approve">Update</Button>
           )}
         </div>
       </div>

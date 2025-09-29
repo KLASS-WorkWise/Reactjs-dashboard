@@ -10,6 +10,7 @@ const DepositPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const userId = useAuthStore((state) => state.loggedInUser?.id);
+  const userName = useAuthStore((state) => state.loggedInUser?.username);
 
   const onFinish = async (values: { amount: number }) => {
     if (!userId) {
@@ -66,24 +67,24 @@ const DepositPage: React.FC = () => {
             <DollarCircleOutlined style={{ fontSize: 38, color: "#fff" }} />
           </div>
           <Title level={3} style={{ marginTop: 16, marginBottom: 8 }}>
-            Nạp tiền vào tài khoản
+           Deposit money into account
           </Title>
           <Text type="secondary" style={{ fontSize: 15 }}>
-            User ID: <b>{userId ?? "Không xác định"}</b>
+            User Name: <b>{userName ?? "Không xác định"}</b>
           </Text>
         </div>
 
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             name="amount"
-            label={<span style={{ fontWeight: 600 }}>💵 Số tiền muốn nạp</span>}
-            rules={[{ required: true, message: "Vui lòng nhập số tiền!" }]}
+            label={<span style={{ fontWeight: 600 }}>💵 Amount to deposit</span>}
+            rules={[{ required: true, message: "Please enter an amount!" }]}
           >
             <InputNumber
               min={1000}
               step={1000}
               precision={0}
-              placeholder="Nhập số tiền (VND)"
+              placeholder="Enter amount (VND)"
               size="large"
               style={{ width: "100%", borderRadius: 12, border: "1px solid #d9d9d9" }}
             />
@@ -104,7 +105,7 @@ const DepositPage: React.FC = () => {
                 boxShadow: "0 4px 12px rgba(24,144,255,0.3)",
               }}
             >
-              🚀 Nạp tiền ngay
+              🚀 Deposit now
             </Button>
           </Form.Item>
         </Form>

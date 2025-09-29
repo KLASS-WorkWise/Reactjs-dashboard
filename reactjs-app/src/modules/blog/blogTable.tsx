@@ -129,11 +129,11 @@ const BlogTable: React.FC<BlogTableProps> = ({
 
   return (
     <Card
-      title="Danh sách Blog"
+      title="Blog Management"
       extra={
         onAddClick ? (
           <Button type="primary" onClick={onAddClick}>
-            Thêm blog mới
+            Add New Blog
           </Button>
         ) : null
       }

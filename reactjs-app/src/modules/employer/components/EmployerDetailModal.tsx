@@ -34,7 +34,7 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
       centered
       width={750}
       title={
-        <span className="employer-modal-title">Hồ sơ công ty</span>
+        <span className="employer-modal-title"></span>
       }
       className="employer-modal-root"
     >
@@ -74,7 +74,7 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
               </p>
               <p className="employer-modal-info-row">
                 <EnvironmentOutlined className="employer-modal-icon" />
-                <span className="employer-modal-label">Địa chỉ:</span>
+                <span className="employer-modal-label">Address:</span>
                 <span className="employer-modal-value">{info.address}</span>
               </p>
               <p className="employer-modal-info-row">
@@ -90,20 +90,20 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
                 </a>
               </p>
               <p className="employer-modal-info-row">
-                <span className="employer-modal-label">Ngành nghề:</span> {info.industry}
+                <span className="employer-modal-label">Industry:</span> {info.industry}
               </p>
               <p className="employer-modal-info-row">
                 <TeamOutlined className="employer-modal-icon" />
-                <span className="employer-modal-label">Quy mô:</span>
+                <span className="employer-modal-label">Company Size:</span>
                 <span className="employer-modal-value">{info.minEmployees} - {info.maxEmployees}</span>
               </p>
             </div>
             <div className="employer-modal-desc-wrap">
-              <span className="employer-modal-desc-label">Mô tả:</span>
+              <span className="employer-modal-desc-label">Description:</span>
               <p className="employer-modal-desc">{info.description}</p>
             </div>
             <div className="employer-modal-status-wrap">
-              <span className="employer-modal-status-label">Trạng thái:</span>
+              <span className="employer-modal-status-label">Status:</span>
               <span
                 className={`employer-modal-status-badge ${
                   info.status === "APPROVED"
@@ -125,7 +125,7 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
                 danger
                 className="employer-modal-btn-reject"
               >
-                Từ chối
+                Reject
               </Button>
               <Button
                 type="primary"
@@ -134,13 +134,13 @@ const EmployerDetailModal: React.FC<EmployerDetailModalProps> = ({
                 }}
                 className="employer-modal-btn-approve"
               >
-                Phê duyệt
+                Approve
               </Button>
             </div>
           </div>
         </div>
       ) : (
-        <p className="employer-modal-empty">Không có thông tin công ty.</p>
+        <p className="employer-modal-empty">No company information.</p>
       )}
     </Modal>
   );

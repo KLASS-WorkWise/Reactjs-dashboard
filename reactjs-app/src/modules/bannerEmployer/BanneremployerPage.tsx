@@ -72,11 +72,11 @@ const BannerEmployerPage = () => {
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Loại banner", dataIndex: "bannerType", key: "bannerType" },
-    { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
-    { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
+    { title: "Banner Type", dataIndex: "bannerType", key: "bannerType" },
+    { title: "Start Date", dataIndex: "startDate", key: "startDate" },
+    { title: "End Date", dataIndex: "endDate", key: "endDate" },
     {
-      title: "Trạng thái",
+      title: "Status",
       dataIndex: "status",
       key: "status",
       render: (status: BannerEmployer["status"]) => {
@@ -86,7 +86,7 @@ const BannerEmployerPage = () => {
       },
     },
     {
-      title: "Ảnh",
+      title: "Image",
       dataIndex: "bannerImage",
       key: "bannerImage",
       render: (url: string) =>
