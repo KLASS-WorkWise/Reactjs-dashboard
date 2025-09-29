@@ -50,7 +50,10 @@ export type Applicant = {
   skillMatchPercent: number;
 };
 
-
+export type ApplicantsWithStatsDto = {
+    applicants: ApplicantResponse[];  // danh sách ứng viên
+    stats: Record<string, number>;                // thống kê theo trạng thái
+}
 export type ApplicantResponse = {
   id: number;
   jobId: number;
