@@ -2,16 +2,33 @@
 import apiClient from "../libs/api-client";
 import type {
   ApplicantResponse,
+  ApplicantsWithStatsDto,
   ApplicantTracking,
 
 
   TimelineEvent,
 } from "../types/employerJobAplicant.type";
+export const ApplicationStatus = {
+  PENDING: "PENDING",
+  CV_REVIEW: "CV_REVIEW",
+  INTERVIEW: "INTERVIEW",
+  OFFER: "OFFER",
+  HIRED: "HIRED",
+  REJECTED: "REJECTED",
+} as const;
+
+export type ApplicationStatus =
+  (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
 
 export const applicantService = {
- getApplicantsByJob: async (jobId: number) => {
-  const res = await apiClient.get<ApplicantResponse[]>(
-    `/employers-status/applicants/${jobId}`
+ getApplicantsByJob: async (jobId: number, status?: ApplicationStatus)=> {
+  const res = await apiClient.get<ApplicantsWithStatsDto>(
+    `/employers-status/applicants/${jobId}`,
+    {
+      params: {
+        status,
+      },
+    }
   );
    console.log("👉 Response full:", res);
   console.log("👉 Response data:", res.data);

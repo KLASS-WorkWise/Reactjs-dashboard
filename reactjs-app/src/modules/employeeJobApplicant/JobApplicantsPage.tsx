@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import { applicantService } from "../../services/applicant.service";
 import type { ApplicantResponse } from "../../types/employerJobAplicant.type";
-import styles from "../../styles/JobApplicantsPage.module.css"; // đổi import
-import { ArrowLeftIcon, SaveIcon } from "lucide-react";
+import styles from "../../styles/JobApplicantsPage.module.css";
+import { ArrowLeftIcon } from "lucide-react";
 import { ApplicationStatus } from "./ApplicantDetailPage";
 
 const statusFlow: Record<ApplicationStatus, ApplicationStatus[]> = {
@@ -18,32 +18,13 @@ const statusFlow: Record<ApplicationStatus, ApplicationStatus[]> = {
 
 function ApplicantRow({
   applicant,
-  onUpdate,
+  onOpenModal,
   onDetail,
 }: {
   applicant: ApplicantResponse;
-  onUpdate: (
-    id: number,
-    status: ApplicationStatus,
-    note: string,
-    scheduledAt?: string,
-    location?: string,
-    interviewer?: string
-  ) => void;
+  onOpenModal: (applicant: ApplicantResponse) => void;
   onDetail: (id: number) => void;
 }) {
-  const [status, setStatus] = useState<ApplicationStatus | "">(
-    applicant.applicationStatus as ApplicationStatus
-  );
-  const [note, setNote] = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
-  const [location, setLocation] = useState("");
-  const [interviewer, setInterviewer] = useState("");
-
-  const allowedNextStatus = statusFlow[applicant.applicationStatus as ApplicationStatus];
-
-  const isUpdateDisabled = applicant.applicationStatus === "HIRED" || applicant.applicationStatus === "REJECTED";
-
   return (
     <tr>
       <td>{applicant.fullName}</td>
@@ -60,71 +41,12 @@ function ApplicantRow({
       </td>
       <td>{applicant.applicationStatus}</td>
       <td>
-        <div className={styles.updateForm}>
-          <select
-            className={styles.statusSelect}
-            value={status}
-            onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
-            disabled={isUpdateDisabled}
-          >
-            <option value="">-- Select Status --</option>
-            {allowedNextStatus.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-
-          {status === "INTERVIEW" && (
-            <div className={styles.interviewForm}>
-              <input
-                type="datetime-local"
-                value={scheduledAt}
-                onChange={(e) => setScheduledAt(e.target.value)}
-                className={styles.datetimeInput}
-                placeholder="Scheduled interview date/time"
-              />
-              <textarea
-                placeholder="Location ..."
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className={styles.noteInput}
-              />
-              <textarea
-                placeholder="Interviewer ..."
-                value={interviewer}
-                onChange={(e) => setInterviewer(e.target.value)}
-                className={styles.noteInput}
-              />
-            </div>
-          )}
-
-          <textarea
-            placeholder="Notes for candidates..."
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            className={styles.noteInput}
-          />
-
-          <button
-            className={styles.saveBtn}
-            onClick={() =>
-              onUpdate(
-                applicant.id,
-                status as ApplicationStatus,
-                note,
-                scheduledAt || undefined,
-                location || undefined,
-                interviewer || undefined
-              )
-            }
-            disabled={isUpdateDisabled || !status}
-          >
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <SaveIcon size={32} />
-            </div>
-          </button>
-        </div>
+        <button
+          className={styles.updateBtn}
+          onClick={() => onOpenModal(applicant)}
+        >
+          Update
+        </button>
       </td>
       <td>
         <button
@@ -144,13 +66,31 @@ export default function JobApplicantsPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const [stats, setStats] = useState<Record<string, number>>({});
+  const [selectedStatus, setSelectedStatus] = useState<ApplicationStatus | "">(
+    ""
+  );
+
+  // modal states
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] =
+    useState<ApplicantResponse | null>(null);
+  const [status, setStatus] = useState<ApplicationStatus | "">("");
+  const [note, setNote] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [location, setLocation] = useState("");
+  const [interviewer, setInterviewer] = useState("");
+
   const fetchApplicants = async () => {
     if (!jobId) return;
     setLoading(true);
     try {
-      const res = await applicantService.getApplicantsByJob(Number(jobId));
-      setApplicants(res.data);
-      console.log("✅ applicants:", res);
+      const res = await applicantService.getApplicantsByJob(
+        Number(jobId),
+        selectedStatus as ApplicationStatus
+      );
+      setApplicants(res.data.applicants);
+      setStats(res.data.stats);
     } catch (err) {
       console.error("❌ Lỗi load applicants:", err);
     } finally {
@@ -160,51 +100,92 @@ export default function JobApplicantsPage() {
 
   useEffect(() => {
     fetchApplicants();
-  }, [jobId]);
+  }, [jobId, selectedStatus]);
 
-  const handleUpdateStatus = async (
-    applicantId: number,
-    status: ApplicationStatus,
-    note?: string,
-    scheduledAt?: string,
-    location?: string,
-    interviewer?: string
-  ) => {
-    if (!status) {
+  const handleUpdateStatus = async () => {
+    if (!selectedApplicant || !status) {
       toast.error("⚠️ Please select a status");
       return;
     }
 
-    // Nếu là INTERVIEW thì validate thêm
     if (status === ApplicationStatus.INTERVIEW && !scheduledAt) {
-      toast.error("⚠️ Please select scheduled interview date/time");
+      toast.error("⚠️ Please select interview date/time");
       return;
     }
 
     try {
       await applicantService.updateApplicantStatus(
-        applicantId,
-        status,
+        selectedApplicant.id,
+        status as ApplicationStatus,
         note,
-        scheduledAt,
-        location,
-        interviewer
+        scheduledAt || undefined,
+        location || undefined,
+        interviewer || undefined
       );
       await fetchApplicants();
-      toast.success(" Update status success");
+      toast.success("✅ Update success");
+      setOpenModal(false);
     } catch (err) {
-      console.error("❌ Lỗi update status:", err);
-      toast.error(" Update status failed");
+      console.error("❌ Update failed:", err);
+      toast.error("❌ Update failed");
     }
   };
 
   return (
     <div className={styles.jobApplicants}>
       <button className={styles.backBtn} onClick={() => navigate(-1)}>
-        <ArrowLeftIcon></ArrowLeftIcon>
+        <ArrowLeftIcon />
       </button>
 
-      {/* <h1 className={styles.pageTitle}>Danh sách ứng viên cho Job #{jobId}</h1> */}
+      {/* Thống kê */}
+      {/* <div className={styles.statsBar}>
+        {Object.entries(stats).map(([status, count]) => (
+          <span key={status} className={styles.statItem}>
+            {status}: {count}
+          </span>
+        ))}
+      </div> */}
+      {/* Stats + Filter chung 1 hàng */}
+      <div className={styles.topBar}>
+        <div className={styles.statsBar}>
+          {[
+            ApplicationStatus.PENDING,
+            ApplicationStatus.CV_REVIEW,
+            ApplicationStatus.INTERVIEW,
+            ApplicationStatus.OFFER,
+            ApplicationStatus.HIRED,
+            ApplicationStatus.REJECTED,
+          ].map((status) => (
+            <span key={status} className={styles.statItem}>
+              {status}: {stats[status] ?? 0}
+            </span>
+          ))}
+        </div>
+
+        {/* Filter */}
+        <div className={styles.filterBar}>
+          <select
+            value={selectedStatus}
+            onChange={(e) =>
+              setSelectedStatus(e.target.value as ApplicationStatus | "")
+            }
+          >
+            <option value="">ALL</option>
+            {[
+              ApplicationStatus.PENDING,
+              ApplicationStatus.CV_REVIEW,
+              ApplicationStatus.INTERVIEW,
+              ApplicationStatus.OFFER,
+              ApplicationStatus.HIRED,
+              ApplicationStatus.REJECTED,
+            ].map((s) => (
+              <option key={s} value={s}>
+                {s} ({stats[s] ?? 0})
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
 
       {loading ? (
         <p>Loading candidate list...</p>
@@ -218,8 +199,8 @@ export default function JobApplicantsPage() {
               <th>Cover Letter</th>
               <th>Resume</th>
               <th>Status</th>
-              <th className="w-64">Update</th>
-              <th className="w-32">Action</th>
+              <th>Update</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -227,12 +208,81 @@ export default function JobApplicantsPage() {
               <ApplicantRow
                 key={a.id}
                 applicant={a}
-                onUpdate={handleUpdateStatus}
+                onOpenModal={(applicant) => {
+                  setSelectedApplicant(applicant);
+                  setStatus(applicant.applicationStatus as ApplicationStatus);
+                  setNote("");
+                  setScheduledAt("");
+                  setLocation("");
+                  setInterviewer("");
+                  setOpenModal(true);
+                }}
                 onDetail={(id) => navigate(`/employerjob/applicants/${id}`)}
               />
             ))}
           </tbody>
         </table>
+      )}
+
+      {/* Modal */}
+      {openModal && selectedApplicant && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <h2>
+              Update Status for <b>{selectedApplicant.fullName}</b>
+            </h2>
+
+            <select
+              className={styles.statusSelect}
+              value={status}
+              onChange={(e) => setStatus(e.target.value as ApplicationStatus)}
+            >
+              <option value="">-- Select Status --</option>
+              {statusFlow[
+                selectedApplicant.applicationStatus as ApplicationStatus
+              ].map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+
+            {status === "INTERVIEW" && (
+              <div className={styles.interviewForm}>
+                <input
+                  type="datetime-local"
+                  value={scheduledAt}
+                  onChange={(e) => setScheduledAt(e.target.value)}
+                  className={styles.datetimeInput}
+                />
+                <input
+                  placeholder="Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className={styles.noteInput}
+                />
+                <input
+                  placeholder="Interviewer"
+                  value={interviewer}
+                  onChange={(e) => setInterviewer(e.target.value)}
+                  className={styles.noteInput}
+                />
+              </div>
+            )}
+
+            <textarea
+              placeholder="Notes..."
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className={styles.noteInput}
+            />
+
+            <div className={styles.modalActions}>
+              <button onClick={() => setOpenModal(false)}>Cancel</button>
+              <button onClick={handleUpdateStatus}>Save</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
