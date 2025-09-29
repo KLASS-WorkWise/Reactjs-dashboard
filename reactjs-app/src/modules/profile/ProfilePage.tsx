@@ -29,7 +29,7 @@ const ProfilePage: React.FC = () => {
       return await updateUser(id, payload);
     },
     onSuccess: () => {
-      toast.success("✅ Cập nhật thông tin thành công!");
+      toast.success(" Cập nhật thông tin thành công!");
       queryClient.invalidateQueries({ queryKey: ["profile", userId] });
     },
     onError: () => {

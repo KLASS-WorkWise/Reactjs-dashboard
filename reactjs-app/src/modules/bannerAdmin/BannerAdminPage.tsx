@@ -64,7 +64,6 @@ const BannerAdminPage = () => {
         }}
       />
     ) : null },
-    { title: "Link", dataIndex: "bannerLink", key: "bannerLink", render: (url: string) => url ? <a href={url} target="_blank" rel="noopener noreferrer">{url}</a> : null },
     { title: "Action", key: "action", render: (_: any, record: BannerAdminType) => (
       <Space>
         {(record.status === "PENDING") ? (

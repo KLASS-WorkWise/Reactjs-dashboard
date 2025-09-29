@@ -1,5 +1,6 @@
 import { Modal, Form, Input, Button, DatePicker, Select, Upload, message } from "antd";
-import { useState } from "react";
+import toast from "react-hot-toast";
+import { useState, useMemo } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { createBanner } from "../banneremployer.service";
@@ -22,6 +23,12 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
   const [sizeHint, setSizeHint] = useState<string>(
     "Ảnh Vip: chiều ngang ≤ 600px, chiều dọc ≤ 380px"
   );
+  const bannerPrices: Record<string, number> = {
+    Vip: 3,
+    Featured: 2,
+    Standard: 1,
+  };
+  const [dateRange, setDateRange] = useState<any>(null);
   const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
 
   // Config message
@@ -133,21 +140,21 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
       if (file) formData.append("bannerImage", file);
 
       const { access_token } = useAuthStore.getState();
-      await createBanner(formData, access_token ?? "");
-      message.success("Tạo banner thành công!");
-      onClose();
-      form.resetFields();
-      setImageUrl("");
-      setFile(null);
-      setImageSize(null);
-      setBannerType("Vip");
-      setSizeHint(getSizeHint("Vip"));
+  await createBanner(formData, access_token ?? "");
+  toast.success("Tạo banner thành công!");
+  onClose();
+  form.resetFields();
+  setImageUrl("");
+  setFile(null);
+  setImageSize(null);
+  setBannerType("Vip");
+  setSizeHint(getSizeHint("Vip"));
     } catch (err: any) {
       let errorMsg = "Tạo banner thất bại!";
       if (err?.response?.data?.message) {
         errorMsg = err.response.data.message;
       }
-      window.alert(errorMsg);
+      toast.error(errorMsg);
     }
     setLoading(false);
   };
@@ -185,9 +192,24 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
               form.setFieldsValue({ bannerType: v });
             }}
           >
-            <Select.Option value="Vip">Vip</Select.Option>
-            <Select.Option value="Featured">Featured</Select.Option>
-            <Select.Option value="Standard">Standard</Select.Option>
+            <Select.Option value="Vip">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>Vip</span>
+                <span style={{ color: "red", fontWeight: 500 }}>$3</span>
+              </div>
+            </Select.Option>
+            <Select.Option value="Featured">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>Featured</span>
+                <span style={{ color: "green", fontWeight: 500 }}>$2</span>
+              </div>
+            </Select.Option>
+            <Select.Option value="Standard">
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span>Standard</span>
+                <span style={{ color: "#1890ff", fontWeight: 500 }}>$1</span>
+              </div>
+            </Select.Option>
           </Select>
           {sizeHint && <div style={{ color: "#faad14", marginTop: 4 }}>{sizeHint}</div>}
         </Form.Item>
@@ -200,18 +222,39 @@ export default function AddBanner({ visible, onClose }: AddBannerProps) {
           <RangePicker
             showTime
             disabledDate={(current) => current && current.isBefore(new Date(), "day")}
+            value={dateRange}
+            onChange={(dates) => {
+              setDateRange(dates);
+              form.setFieldsValue({ dateRange: dates });
+            }}
           />
         </Form.Item>
 
         <Form.Item label="Ảnh banner/logo" required>
-          <Upload
-            name="file"
-            customRequest={handleUpload}
-            showUploadList={false}
-            accept="image/*"
-          >
-            <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
-          </Upload>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div>
+              <Upload
+                name="file"
+                customRequest={handleUpload}
+                showUploadList={false}
+                accept="image/*"
+              >
+                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
+              </Upload>
+            </div>
+            <div style={{ color: "#52c41a", fontWeight: 600, fontSize: 20, marginRight: 30 }}>
+              Tổng phí: {
+                (() => {
+                  if (!dateRange || !dateRange[0] || !dateRange[1]) return "$0";
+                  const start = dateRange[0];
+                  const end = dateRange[1];
+                  const days = end.diff(start, "day") + 1;
+                  const price = bannerPrices[bannerType] * days;
+                  return `$${price}`;
+                })()
+              }
+            </div>
+          </div>
           {imageUrl && (
             <div style={{ marginTop: 8 }}>
               <div style={{ fontSize: 13, color: "#555" }}>Preview ảnh đã chọn:</div>
