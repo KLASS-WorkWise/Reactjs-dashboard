@@ -1,6 +1,6 @@
 import { Modal, Form, Input, Button, DatePicker, Select, Upload, message } from "antd";
 import toast from "react-hot-toast";
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { UploadOutlined } from "@ant-design/icons";
 import type { UploadRequestOption } from "rc-upload/lib/interface";
 import { createBanner } from "../banneremployer.service";

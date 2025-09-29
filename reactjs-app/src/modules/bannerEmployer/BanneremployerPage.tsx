@@ -5,16 +5,14 @@ import {
   Button,
   Tag,
   Typography,
-  Space,
   message,
   Modal,
 } from "antd";
 import AddBanner from "./components/AddBanner";
 import EditBanner from "./components/EditBanner";
-import { getBannersByUser, renewBanner } from "./banneremployer.service";
+import { getBannersByUser } from "./banneremployer.service";
 import { useAuthStore } from "../../stores/useAuthorStore";
 import type { BannerEmployer } from "./banneremployer.type";
-import dayjs from "dayjs";
 
 const BannerEmployerPage = () => {
   const [banners, setBanners] = useState<BannerEmployer[]>([]);
@@ -41,32 +39,6 @@ const BannerEmployerPage = () => {
       message.error("Không lấy được danh sách banner!");
     }
     setLoading(false);
-  };
-
-  const handleRenew = (banner: BannerEmployer) => {
-    Modal.confirm({
-      title: "Gia hạn banner",
-      content: "Bạn muốn gửi yêu cầu gia hạn banner này?",
-      onOk: async () => {
-        try {
-          await renewBanner({
-            ...banner,
-            startDate: dayjs(banner.endDate)
-              .add(1, "day")
-              .format("YYYY-MM-DDTHH:mm:ss"),
-            endDate: dayjs(banner.endDate)
-              .add(8, "day")
-              .format("YYYY-MM-DDTHH:mm:ss"),
-            status: "PENDING",
-            id: undefined, // Tạo mới
-          });
-          message.success("Đã gửi yêu cầu gia hạn!");
-          fetchBanners();
-        } catch {
-          message.error("Gửi yêu cầu gia hạn thất bại!");
-        }
-      },
-    });
   };
 
   const columns = [
