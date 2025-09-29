@@ -21,10 +21,10 @@ const BannerAdminPage = () => {
   const handleApprove = async (id: number) => {
     try {
       await approveBannerAdmin(id);
-      message.success("Duyệt banner thành công!");
+      message.success("Approve banner successfully!");
       refetch();
     } catch {
-      message.error("Duyệt banner thất bại!");
+      message.error("Approve banner failed!");
     }
   };
 
@@ -32,28 +32,28 @@ const BannerAdminPage = () => {
     if (!rejectId) return;
     try {
       await rejectBannerAdmin(rejectId, rejectReason);
-      message.success("Từ chối banner thành công!");
+      message.success("Reject banner successfully!");
       setRejectModal(false);
       setRejectReason("");
       setRejectId(null);
       refetch();
     } catch {
-      message.error("Từ chối banner thất bại!");
+      message.error("Reject banner failed!");
     }
   };
 
   const columns = [
     { title: "ID", dataIndex: "id", key: "id" },
     { title: "Company", dataIndex: "companyName", key: "companyName" },
-    { title: "Vị trí", dataIndex: "bannerType ", key: "bannerType " },
-    { title: "Ngày bắt đầu", dataIndex: "startDate", key: "startDate" },
-    { title: "Ngày kết thúc", dataIndex: "endDate", key: "endDate" },
-    { title: "Trạng thái", dataIndex: "status", key: "status", render: (status: string) => {
+    { title: "Position", dataIndex: "bannerType ", key: "bannerType " },
+    { title: "Start Date", dataIndex: "startDate", key: "startDate" },
+    { title: "End Date", dataIndex: "endDate", key: "endDate" },
+    { title: "Status", dataIndex: "status", key: "status", render: (status: string) => {
       if (status === "ACTIVE") return <Tag color="green">ACTIVE</Tag>;
       if (status === "REJECTED") return <Tag color="red">REJECTED</Tag>;
       return <Tag color="orange">PENDING</Tag>;
     }},
-    { title: "Ảnh", dataIndex: "bannerImage", key: "bannerImage", render: (url: string) => url ? (
+    { title: "Image", dataIndex: "bannerImage", key: "bannerImage", render: (url: string) => url ? (
       <img
         src={url.startsWith("/uploads/") ? `http://localhost:8080${url}` : url}
         alt="banner"
@@ -79,17 +79,17 @@ const BannerAdminPage = () => {
 
   return (
     <Card style={{ margin: 24 }}>
-      <Typography.Title level={3}>Quản lý Banner Admin</Typography.Title>
+      <Typography.Title level={3}>Banner Management</Typography.Title>
   <Table dataSource={banners} columns={columns} rowKey="id" loading={isLoading} pagination={{ pageSize: 10 }} />
       <Modal
         open={rejectModal}
-        title="Nhập lý do từ chối banner"
+        title="Enter rejection reason"
         onCancel={() => { setRejectModal(false); setRejectReason(""); setRejectId(null); }}
         onOk={handleReject}
-        okText="Từ chối"
-        cancelText="Hủy"
+        okText="Reject"
+        cancelText="Cancel"
       >
-        <Input.TextArea value={rejectReason} onChange={e => setRejectReason(e.target.value)} rows={4} placeholder="Nhập lý do từ chối..." />
+        <Input.TextArea value={rejectReason} onChange={e => setRejectReason(e.target.value)} rows={4} placeholder="Enter rejection reason..." />
       </Modal>
       {/* Modal xem ảnh to */}
       <Modal

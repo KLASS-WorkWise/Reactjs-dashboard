@@ -49,6 +49,7 @@ const DefaultLayout: React.FC = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const { msg, type, clearMessage } = useAppMessage();
 
+  // Gọi hook trước khi render return
   useEffect(() => {
     if (msg) {
       messageApi.info({
@@ -105,7 +106,7 @@ const DefaultLayout: React.FC = () => {
           collapsedWidth={80}
           style={{
             position: "fixed",
-            top: 64, // đúng bằng chiều cao header
+            top: 64,
             left: 0,
             background: "#fff",
             overflow: "auto",

@@ -191,9 +191,9 @@ const DashboardPage = () => {
         {/* Thống kê ứng viên đã apply job posting */}
         <Col xs={24} md={12}>
           <Card>
-            <Title level={4}>Ứng viên đã apply Job</Title>
+            <Title level={4}>Candidates have applied for the Job</Title>
             <Title level={2}>{totalApplications}</Title>
-            <Text type="secondary">Tỉ lệ ứng tuyển / số tin đăng</Text>
+            <Text type="secondary">Application Rate / Total Job Postings</Text>
             <Pie {...applyPieConfig} />
           </Card>
         </Col>

@@ -1,5 +1,8 @@
+"use client";
+// \`\`\`tsx file="components/TiptapEditor.tsx"
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import Image from "@tiptap/extension-image";
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -10,18 +13,36 @@ import {
   BlockOutlined,
   UndoOutlined,
   RedoOutlined,
+  PictureOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
-import { Button, Tooltip } from "antd";
-import React, { forwardRef, useEffect } from "react";
+import { Button, Tooltip, Popconfirm } from "antd";
+import type React from "react";
+import { forwardRef, useEffect, useRef } from "react";
+import { createImageUploadHandler } from "./imageUtils";
 
 interface MenuBarProps {
   editor: any; // TipTap editor instance
 }
 
 const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   if (!editor) {
     return null;
   }
+
+  const handleImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveImage = () => {
+    if (editor.isActive("image")) {
+      editor.chain().focus().deleteSelection().run();
+    }
+  };
+
+  const handleFileChange = createImageUploadHandler(editor, 5);
 
   const menuItems = [
     {
@@ -73,14 +94,36 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
       type: "divider",
     },
     {
+      icon: <PictureOutlined />,
+      action: handleImageUpload,
+      isActive: false,
+      tooltip: "Thêm ảnh",
+    },
+    ...(editor.isActive("image")
+      ? [
+          {
+            icon: <DeleteOutlined />,
+            action: handleRemoveImage,
+            isActive: false,
+            tooltip: "Xóa ảnh đã chọn",
+            danger: true,
+          },
+        ]
+      : []),
+    {
+      type: "divider",
+    },
+    {
       icon: <UndoOutlined />,
       action: () => editor.chain().focus().undo().run(),
       tooltip: "Undo",
+      disabled: !editor.can().undo(),
     },
     {
       icon: <RedoOutlined />,
       action: () => editor.chain().focus().redo().run(),
       tooltip: "Redo",
+      disabled: !editor.can().redo(),
     },
   ];
 
@@ -97,6 +140,13 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
         background: "#fafafa",
       }}
     >
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
       {menuItems.map((item, index) =>
         item.type === "divider" ? (
           <div
@@ -109,12 +159,32 @@ const MenuBar: React.FC<MenuBarProps> = ({ editor }) => {
           />
         ) : (
           <Tooltip title={item.tooltip} key={index}>
-            <Button
-              icon={item.icon}
-              onClick={item.action}
-              type={item.isActive ? "primary" : "default"}
-              size="small"
-            />
+            {item.danger ? (
+              <Popconfirm
+                title="Xóa ảnh này?"
+                description="Bạn có chắc chắn muốn xóa ảnh đã chọn?"
+                onConfirm={item.action}
+                okText="Xóa"
+                cancelText="Hủy"
+                okType="danger"
+              >
+                <Button
+                  icon={item.icon}
+                  type="default"
+                  size="small"
+                  danger
+                  disabled={item.disabled}
+                />
+              </Popconfirm>
+            ) : (
+              <Button
+                icon={item.icon}
+                onClick={item.action}
+                type={item.isActive ? "primary" : "default"}
+                size="small"
+                disabled={item.disabled}
+              />
+            )}
           </Tooltip>
         )
       )}
@@ -132,7 +202,17 @@ interface TiptapEditorProps {
 const TiptapEditor = forwardRef<HTMLDivElement, TiptapEditorProps>(
   ({ value = "", onChange, onBlur }, ref) => {
     const editor = useEditor({
-      extensions: [StarterKit],
+      extensions: [
+        StarterKit,
+        Image.configure({
+          inline: true,
+          allowBase64: true,
+          HTMLAttributes: {
+            style:
+              "max-width: 100%; height: auto; border-radius: 4px; cursor: pointer;",
+          },
+        }),
+      ],
       content: value,
       onUpdate: ({ editor }) => {
         if (onChange) {

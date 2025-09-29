@@ -81,42 +81,82 @@ const ChatBox: React.FC<ChatBoxProps> = ({ chatId, currentUserId, initialApplica
     const parts = chatId.split("_");
     const maybeEmployerId = parts[0] ?? null;
     const maybeApplicantId = parts[1] ?? null;
+    // Xác định phía nhận để set unread
+    // Nếu currentUserId là employer thì unread cho ứng viên, ngược lại cho employer
+    const unreadFor = currentUserId === maybeEmployerId ? 'applicant' : 'employer';
     await setDoc(doc(db, "chats", chatId), {
       employerId: maybeEmployerId ? String(maybeEmployerId) : "",
       applicantId: maybeApplicantId ? String(maybeApplicantId) : "",
       applicantName: applicantName || String(maybeApplicantId),
       lastMessage: input,
       lastTimestamp: serverTimestamp(),
+      unread: unreadFor === 'employer' ? true : true // luôn set true, Sidebar sẽ tự xử lý phía hiển thị
     }, { merge: true });
     setInput("");
   };
 
+  // Avatar cho 2 phía
+  const avatar = (isUser: boolean) => (
+    <div style={{
+      width: 36, height: 36, borderRadius: '50%', background: isUser ? '#bae6fd' : '#e0e7ef',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 600, color: isUser ? '#0284c7' : '#64748b', fontSize: 18,
+      margin: isUser ? '0 0 0 10px' : '0 10px 0 0', flexShrink: 0
+    }}>
+      <span role="img" aria-label="avatar">{isUser ? '🧑‍💼' : '👤'}</span>
+    </div>
+  );
+
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-      <div style={{ padding: 8, borderBottom: "1px solid #eee" }}>
+      <div style={{ padding: 16, borderBottom: "1.5px solid #e0e7ef", background: '#f1f5f9', borderTopLeftRadius: 12, borderTopRightRadius: 12 }}>
         <strong>Ứng viên: </strong>
         {applicantName || maybeApplicantId || "(Không rõ)"}
       </div>
-      <div style={{ flex: 1, overflowY: "auto", padding: 8 }}>
-        {messages.map(msg => (
-          <div key={msg.id} style={{ textAlign: msg.senderId === currentUserId ? "right" : "left", margin: "4px 0" }}>
-            <div style={{ fontSize: 12, color: "#666", marginBottom: 4 }}>
-              {msg.senderId === currentUserId ? "Bạn" : (applicantName || maybeApplicantId || msg.senderId)}
+      <div style={{ flex: 1, overflowY: "auto", padding: 16, background: '#f8fafc' }}>
+        {messages.length === 0 && (
+          <div style={{textAlign: 'center', color: '#94a3b8', marginTop: 48, fontSize: 18}}>Chưa có tin nhắn nào</div>
+        )}
+        {messages.map(msg => {
+          const isUser = msg.senderId === currentUserId;
+          return (
+            <div key={msg.id} style={{
+              display: 'flex', flexDirection: isUser ? 'row-reverse' : 'row', alignItems: 'flex-end', margin: '12px 0',
+            }}>
+              {avatar(isUser)}
+              <div style={{ maxWidth: '70%', minWidth: 60 }}>
+                <div style={{ fontSize: 12, color: '#64748b', marginBottom: 4, textAlign: isUser ? 'right' : 'left', fontWeight: 500 }}>
+                  {isUser ? 'Bạn' : (applicantName || maybeApplicantId || msg.senderId)}
+                </div>
+                <div style={{
+                  background: isUser ? 'linear-gradient(120deg, #bae6fd 0%, #e0f2fe 100%)' : '#fff',
+                  color: '#0f172a',
+                  padding: '10px 16px',
+                  borderRadius: 16,
+                  borderBottomRightRadius: isUser ? 4 : 16,
+                  borderBottomLeftRadius: isUser ? 16 : 4,
+                  boxShadow: '0 2px 8px #e0e7ef',
+                  fontSize: 15,
+                  wordBreak: 'break-word',
+                  textAlign: 'left',
+                  marginLeft: isUser ? 0 : 2,
+                  marginRight: isUser ? 2 : 0
+                }}>
+                  {msg.text}
+                </div>
+              </div>
             </div>
-            <span style={{ background: msg.senderId === currentUserId ? "#e0f7fa" : "#fff", padding: "6px 12px", borderRadius: 8, display: "inline-block" }}>
-              {msg.text}
-            </span>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <div style={{ display: "flex", padding: 8, borderTop: "1px solid #eee" }}>
+      <div style={{ display: "flex", padding: 16, borderTop: "1.5px solid #e0e7ef", background: '#f1f5f9', borderBottomLeftRadius: 12, borderBottomRightRadius: 12 }}>
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
-          style={{ flex: 1, padding: 8, borderRadius: 4, border: "1px solid #ccc" }}
+          style={{ flex: 1, padding: 12, borderRadius: 24, border: "1.5px solid #cbd5e1", fontSize: 15, outline: 'none', background: '#fff', boxShadow: '0 1px 4px #e0e7ef' }}
           placeholder="Nhập tin nhắn..."
+          onKeyDown={e => { if (e.key === 'Enter') sendMessage(); }}
         />
-        <button onClick={sendMessage} style={{ marginLeft: 8, padding: "8px 16px" }}>
+        <button onClick={sendMessage} style={{ marginLeft: 12, padding: "10px 24px", borderRadius: 24, background: '#3b82f6', color: '#fff', fontWeight: 600, border: 'none', fontSize: 15, boxShadow: '0 2px 8px #c7d2fe', cursor: 'pointer', transition: 'background 0.2s' }}>
           Gửi
         </button>
       </div>

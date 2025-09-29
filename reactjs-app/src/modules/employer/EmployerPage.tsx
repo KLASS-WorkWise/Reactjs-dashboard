@@ -53,7 +53,7 @@ const EmployerPage = () => {
             dataIndex: 'phoneNumber',
             key: 'phoneNumber',
             render: (phoneNumber: string | null) =>
-                phoneNumber ? phoneNumber : <span style={{ color: '#999' }}>Chưa được cập nhật</span>,
+                phoneNumber ? phoneNumber : <span style={{ color: '#999' }}>Not Updated Yet</span>,
         },
         {
             title: 'Avatar',
@@ -63,7 +63,7 @@ const EmployerPage = () => {
                 avatar ? (
                     <img src={avatar} alt="avatar" style={{ width: 32, height: 32, borderRadius: '50%' }} />
                 ) : (
-                    <span style={{ color: '#999' }}>Chưa được cập nhật</span>
+                    <span style={{ color: '#999' }}>Not Updated Yet</span>
                 ),
         },
     ];
