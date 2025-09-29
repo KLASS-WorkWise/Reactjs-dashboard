@@ -1,10 +1,10 @@
+import React from 'react'
 import { doc, setDoc } from "firebase/firestore";
 import { Button } from 'antd';
 import { db } from './libraries/firebase/initializaApp';
 
-type Props = {}
 
-export default function ChatMessages({ }: Props) {
+export default function ChatMessages() {
 
     const handleAddData = async () => {
 

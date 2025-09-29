@@ -35,7 +35,7 @@ const ChatPage: React.FC = () => {
         ) : (
           <div style={{ padding: 48, textAlign: "center", color: "#888", fontSize: 18 }}>
             <div style={{marginBottom: 12, fontSize: 32}}>💬</div>
-            Select a candidate to start chatting
+            Chọn ứng viên để bắt đầu chat
           </div>
         )}
       </div>

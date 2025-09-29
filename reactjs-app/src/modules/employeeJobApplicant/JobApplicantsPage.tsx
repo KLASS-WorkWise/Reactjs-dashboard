@@ -138,16 +138,17 @@ export default function JobApplicantsPage() {
       </button>
 
       {/* Thống kê */}
-      {/* <div className={styles.statsBar}>
+      
+      {/* Stats + Filter chung 1 hàng */}
+      <div className={styles.topBar}>
+        <div className={styles.statsBar}>
         {Object.entries(stats).map(([status, count]) => (
           <span key={status} className={styles.statItem}>
             {status}: {count}
           </span>
         ))}
-      </div> */}
-      {/* Stats + Filter chung 1 hàng */}
-      <div className={styles.topBar}>
-        <div className={styles.statsBar}>
+      </div>
+        {/* <div className={styles.statsBar}>
           {[
             ApplicationStatus.PENDING,
             ApplicationStatus.CV_REVIEW,
@@ -160,7 +161,7 @@ export default function JobApplicantsPage() {
               {status}: {stats[status] ?? 0}
             </span>
           ))}
-        </div>
+        </div> */}
 
         {/* Filter */}
         <div className={styles.filterBar}>
@@ -199,7 +200,7 @@ export default function JobApplicantsPage() {
               <th>Cover Letter</th>
               <th>Resume</th>
               <th>Status</th>
-              <th>Update</th>
+              <th>Update status</th>
               <th>Action</th>
             </tr>
           </thead>
